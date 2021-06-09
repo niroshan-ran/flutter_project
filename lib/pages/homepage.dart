@@ -18,8 +18,8 @@ class _HomePageState extends State<HomePage> {
         onPressed: () async {
           await FirebaseAuth.instance.signOut();
         },
-        child: Text("Sign Out"),
-      )),
+        child: Text("Sign Out@"),
+      ),),
     );
   }
 }

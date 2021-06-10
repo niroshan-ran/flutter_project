@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -33,9 +35,20 @@ class _RegisterPageState extends State<RegisterPage> {
     FocusScope.of(context).requestFocus(textNode);
   }
 
+  void clearAllText() {
+    emailText.clear();
+    passwordText.clear();
+    nickNameText.clear();
+    confirmPasswordText.clear();
+    _email = "";
+    _password = "";
+    _confirmPassword = "";
+    _nickName = "";
+  }
+
   void clearText(textFieldController, variableString) {
     textFieldController.clear();
-
+    _character = Positions.guest; // For Test
     switch (variableString) {
       case 'email':
         _email = "";
@@ -74,35 +87,64 @@ class _RegisterPageState extends State<RegisterPage> {
         timeInSecForIosWeb: 1);
   }
 
-  Future<void> _createUser() async {
-    /*if (_email != "" && _password != "") {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: _email, password: _password);
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          focusText(focusPasswordNode);
-          clearText(passwordText, 'password');
-          _showToast("The password provided is too weak");
-        } else if (e.code == 'email-already-in-use') {
-          clearText(emailText, 'email');
-          clearText(passwordText, 'password');
+  Future<int> _createUserDoc(userId) async {
+    for (String s in userId) {
+      if (s != "") {
+        FirebaseFirestore.instance.collection('users').doc(s).set({
+          'email': _email,
+          'nickName': _nickName,
+          'position': _position
+        }).catchError((error) {
+          clearAllText();
           focusText(focusEmailNode);
-          _showToast("The account already exists for that email");
-        } else if (e.code == 'invalid-email') {
-          clearText(emailText, 'email');
-          clearText(passwordText, 'password');
-          focusText(focusEmailNode);
-          _showToast("Invalid Email");
-        } else {
-          _showErrorToast("Unknown Error Occurred", e);
-        }
-      } catch (e) {
-        _showErrorToast("Unknown Error Occurred", e);
+          _showToast("Unknown Error Occurred. Please Try Again");
+        });
+
+        return 0;
+      } else {
+        continue;
       }
+    }
+    return -1;
+  }
+
+  Future<String> _createUser() async {
+    if (_email != "" &&
+        _password != "" &&
+        _confirmPassword != "" &&
+        _nickName != "" &&
+        _position != "") {
+      if (_password == _confirmPassword) {
+        try {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+                  email: _email, password: _confirmPassword);
+
+          return userCredential.user!.uid;
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'weak-password') {
+            _showToast('The password provided is too weak.');
+            return "";
+          } else if (e.code == 'email-already-in-use') {
+            _showToast('The account already exists for that email.');
+            return "";
+          }
+        } catch (e) {
+          _showErrorToast("Unknown Error Occurred", e);
+          return "";
+        }
+      } else {
+        clearText(confirmPasswordText, 'confirmPassword');
+        focusText(focusConfirmPasswordNode);
+        _showToast("Confirmed Password is Not Match");
+        return "";
+      }
+
+      return "";
     } else {
       _showToast("Please Fill all the Required Fields");
-    }*/
+      return "";
+    }
   }
 
   Positions? _character = Positions.guest;
@@ -175,7 +217,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         onChanged: (Positions? value) {
                           setState(() {
                             _character = value;
-                            _position = _character.toString();
+                            _position = 'guest';
                           });
                         },
                       ),
@@ -188,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         onChanged: (Positions? value) {
                           setState(() {
                             _character = value;
-                            _position = _character.toString();
+                            _position = 'reporter';
                           });
                         },
                       ),
@@ -201,7 +243,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         onChanged: (Positions? value) {
                           setState(() {
                             _character = value;
-                            _position = _character.toString();
+                            _position = 'moderator';
                           });
                         },
                       ),
@@ -214,7 +256,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MaterialButton(
-                      onPressed: _createUser,
+                      onPressed: () {
+                        Future.wait([
+                          Future.wait([_createUser()])
+                              .then((value) => _createUserDoc(value))
+                        ]).then((value) {
+                          for (int i in value) {
+                            if (i > -1) {
+                              Navigator.pop(context);
+                              _showToast("Registration is Successful");
+                              break;
+                            }
+                          }
+                        });
+                      },
                       child: Text("Register"),
                     ),
                     MaterialButton(

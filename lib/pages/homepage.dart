@@ -23,28 +23,33 @@ class _HomePageState extends State<HomePage> {
         .where('email', isEqualTo: widget.userEmail)
         .get();
 
-    return FutureBuilder(
-      future: futureRef,
-      builder: (context, AsyncSnapshot snapshot) {
-        QuerySnapshot<Map<String, dynamic>> userResult = snapshot.data;
-        List<QueryDocumentSnapshot<Map<String, dynamic>>> userResultDocs =
-            userResult.docs;
+    try {
+      return FutureBuilder(
+        future: futureRef,
+        builder: (context, AsyncSnapshot snapshot) {
+          if (!snapshot.hasError) {
+            QuerySnapshot<Map<String, dynamic>> userResult = snapshot.data;
+            List<QueryDocumentSnapshot<Map<String, dynamic>>> userResultDocs =
+                userResult.docs;
 
-        for (var obj in userResultDocs) {
-          switch (obj.get('position')) {
-            case 'moderator':
-              return ModeratorPage(nickName: obj.get('nickName'));
-            case 'reporter':
-              return ReporterPage(nickName: obj.get('nickName'));
-            case 'guest':
-              return GuestPage(nickName: obj.get('nickName'));
-            default:
-              break;
+            for (var obj in userResultDocs) {
+              switch (obj.get('position')) {
+                case 'moderator':
+                  return ModeratorPage(nickName: obj.get('nickName'));
+                case 'reporter':
+                  return ReporterPage(nickName: obj.get('nickName'));
+                case 'guest':
+                  return GuestPage(nickName: obj.get('nickName'));
+                default:
+                  break;
+              }
+            }
           }
-        }
-
-        return LoginPage();
-      },
-    );
+          return LoginPage();
+        },
+      );
+    } on TypeError catch (Error) {
+      return LoginPage();
+    }
   }
 }

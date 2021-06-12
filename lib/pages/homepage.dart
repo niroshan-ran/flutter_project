@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'addcommentpage.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -14,12 +16,29 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(title: Text("Home Page")),
       body: Center(
-          child: MaterialButton(
-        onPressed: () async {
-          await FirebaseAuth.instance.signOut();
+        child: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      MaterialButton(
+        onPressed: (){
+          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddCommentPage()));
         },
-        child: Text("Sign Out@"),
-      ),),
-    );
+        child: Text("Comment Pages"),
+        ),
+      MaterialButton(
+      onPressed: () async {
+        await FirebaseAuth.instance.signOut();
+        },
+      child: Text("Sign Out@"),
+        ),
+    ],
+    )
+      //     child: MaterialButton(
+      //   onPressed: () async {
+      //     await FirebaseAuth.instance.signOut();
+      //   },
+      //   child: Text("Sign Out@"),
+      // ),),
+    ));
   }
 }

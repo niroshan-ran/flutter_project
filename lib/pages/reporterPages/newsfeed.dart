@@ -2,15 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/widget/drawer.dart';
 
-class ReporterPage extends StatefulWidget {
+class NewsFeed extends StatefulWidget {
+  static const String routeName = '/newsFeed';
   final nickName;
-  const ReporterPage({Key? key, @required this.nickName}) : super(key: key);
+  const NewsFeed({Key? key, @required this.nickName}) : super(key: key);
 
   @override
-  _ReporterPageState createState() => _ReporterPageState();
+  _NewsFeedState createState() => _NewsFeedState();
 }
 
-class _ReporterPageState extends State<ReporterPage> {
+class _NewsFeedState extends State<NewsFeed> {
   void signOut() async {
     await FirebaseAuth.instance.signOut();
   }
@@ -19,9 +20,7 @@ class _ReporterPageState extends State<ReporterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         drawer: AppDrawer(),
-        appBar: AppBar(
-            title: Text("Reporter Page"),
-            backgroundColor: Colors.amber),
+        appBar: AppBar(title: Text("News Feed")),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [

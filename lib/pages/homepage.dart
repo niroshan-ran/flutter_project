@@ -5,6 +5,7 @@ import 'package:flutter_project/pages/reporterpage.dart';
 import 'guestpage.dart';
 import 'loginpage.dart';
 import 'moderatorpage.dart';
+import 'news_management_admin.dart';
 
 class HomePage extends StatefulWidget {
   final userEmail;

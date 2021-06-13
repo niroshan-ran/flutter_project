@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/admin_drawer.dart';
 import 'package:flutter_project/pages/homepage.dart';
 import 'package:flutter_project/pages/loginpage.dart';
+import 'package:flutter_project/pages/moderatorpage.dart';
+import 'package:flutter_project/pages/news_management_admin.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +18,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LandingPage(),
+      routes:  {
+        Routes.user: (context) => ModeratorPage(),
+        Routes.news: (context) => NewsManagementAdminPage(),
+        // Routes.newsfeed: (context) => NotesPage(),
+      },
     );
   }
 }

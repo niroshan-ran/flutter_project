@@ -2,11 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/admin_drawer.dart';
+
+import 'news_management_admin.dart';
 
 
 class ModeratorPage extends StatefulWidget {
   final nickName;
   final email;
+
+  static const String routeName = '/userManagement';
 
   const ModeratorPage({Key? key, @required this.nickName,@required this.email}) : super(key: key);
 
@@ -15,11 +20,24 @@ class ModeratorPage extends StatefulWidget {
 }
 
 class _ModeratorPageState extends State<ModeratorPage> {
-
  final CollectionReference userRef = FirebaseFirestore.instance.collection('users');
 
  navigateToUserMng(){
-   return ModeratorPage(nickName:widget.nickName,email : widget.email);
+   Navigator.of(context).pop();
+   Navigator.of(context).push(
+       PageRouteBuilder(pageBuilder: (context, _, __) {
+         return ModeratorPage(nickName:widget.nickName,email : widget.email);
+       }
+   ));
+ }
+
+ navigateToNewAdmin(){
+   Navigator.of(context).pop();
+   Navigator.of(context).push(
+       PageRouteBuilder(pageBuilder: (context, _, __) {
+         return new NewsManagementAdminPage(nickName:widget.nickName,email : widget.email);
+       }
+   ));
  }
 
   void signOut() async {
@@ -51,40 +69,8 @@ class _ModeratorPageState extends State<ModeratorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Moderator Page")),
-        drawer: Drawer(
-          child: ListView(
-            children: [
-              UserAccountsDrawerHeader(
-                  accountName: Text('${widget.nickName}'),
-                  accountEmail: Text('${widget.email}'),
-                  currentAccountPicture: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(100),
-                      image: DecorationImage(image: AssetImage("assets/admin_avatar.png"))
-                    ),
-                  ),
-              ),
-              ListTile(
-                leading: Icon(Icons.person),
-                title: Text("Users"),
-                onTap: navigateToUserMng,
-              ),
-              ListTile(
-                leading: Icon(Icons.pages),
-                title: Text("Articles"),
-              ),
-              ListTile(
-                leading: Icon(Icons.logout),
-                title: Text("Log Out"),
-                onTap: signOut,
-              )
-            ],
-          ),
-        ),
+        appBar: AppBar(title: Text("News Admin")),
+        drawer: AdminDrawer(nickName: widget.nickName,email: widget.email,),
         body: Container(
           color: Colors.black12,
           child: Padding(

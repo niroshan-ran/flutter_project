@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/models/guestnews.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'addcommentpage.dart';
@@ -39,23 +38,28 @@ class _GuestPageState extends State<GuestPage> {
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text('Welcome Guest ${widget.nickName}'),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                MaterialButton(
-                  onPressed: signOut,
-                  child: Text('Sign Out'),
-                ),
                 MaterialButton(
                   onPressed: (){
                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddCommentPage()));
                   },
-                  child: Text("Comment Pages"),
+                  child: new Text("Comment Us", style: new TextStyle(fontSize: 20.0),),
+                  textColor: Colors.white,
+                  color: Colors.cyan,
+                ),
+                MaterialButton(
+                  onPressed: signOut,
+                  child: new Text("Sign Out", style: new TextStyle(fontSize: 20.0),),
+                  textColor: Colors.white,
+                  color: Colors.cyan,
                 ),
               ],
             ),
+            Text('All Guest News'),
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('comments').snapshots(),
+                  stream: FirebaseFirestore.instance.collection('guest_news').snapshots(),
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot){
                     if(querySnapshot.hasError)
                       _showToast("Error has occur!");
@@ -68,9 +72,11 @@ class _GuestPageState extends State<GuestPage> {
 
                       return ListView.builder(
                         itemBuilder: (context, index){
-                          return ListTile(
-                              title : Text(list[index]["comment"])
-                          );
+                          return guestNewsUI(list[index]["title"], list[index]["description"],list[index]["image"], list[index]["nickName"]);
+                          // return ListTile(
+                          //   title : Text(list[index]["title"]),
+                          //   subtitle : Text(list[index]["image"])
+                          // );
                         },
                         itemCount: list.length,
                       );

@@ -21,6 +21,17 @@ class _AddCommentPageState extends State<AddCommentPage> {
 
   final commentText = TextEditingController();
 
+  void validateAndSave(){
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GuestPage()));
+    Future.wait([
+      Future.wait([_addComment()])
+          .then((value) => _addCommentDoc(value))
+    ]);
+  }
+
   void focusText(textNode) {
     FocusScope.of(context).requestFocus(textNode);
   }
@@ -94,86 +105,154 @@ class _AddCommentPageState extends State<AddCommentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Comment Page")),
-      body: Padding(
-          padding: const EdgeInsets.only(
-            left: 0,
-            top: 100,
-            right: 0,
-            bottom: 20,
-          ),
-          child:Column(
-            children: [
-            Image.asset(
-            'assets/images/feb.jpg',
-            width: 400.0,
-            height: 300.0,
-            fit: BoxFit.cover,
-            ),
-            TextField(
-              focusNode: focusCommentNode,
-              controller: commentText,
-              onChanged: (value) {
-                _comment = value;
-            },
-            decoration: InputDecoration(
-                hintText: "Add Your Comment",
-                contentPadding: const EdgeInsets.only(
-                  left: 20,
-                  top: 70,
-                  right: 0,
-                  bottom: 20,
-                )
-            ),
-          ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MaterialButton(
-                    padding: const EdgeInsets.only(
-                    left: 12,
-                    top: 70,
-                    right: 12,
-                    bottom: 0,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => GuestPage()));
-                      Future.wait([
-                        Future.wait([_addComment()])
-                            .then((value) => _addCommentDoc(value))
-                      ]);
-                    },
-                    child: Text("Post"),
-                  ),
-                  // MaterialButton(
-                  //   padding: const EdgeInsets.only(
-                  //     left: 12,
-                  //     top: 70,
-                  //     right: 12,
-                  //     bottom: 0,
-                  //   ),
-                  //   onPressed: __editComment,
-                  //   child: Text("Edit Comment"),
-                  // ),
-                  // MaterialButton(
-                  //   padding: const EdgeInsets.only(
-                  //     left: 12,
-                  //     top: 70,
-                  //     right: 12,
-                  //     bottom: 0,
-                  //   ),
-                  //   onPressed: __deleteComment,
-                  //   child: Text("Delete Comment"),
-                  // ),
-                ],
-            ),
-          ]
-      )
+      body: new Container(
+        margin: EdgeInsets.all(15.0),
+        child: new Form(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: createImage() + createInputs() + createButtons() + viewComment(),
+            )
+        ),
     ));
   }
 
+  // getItem(var subject) {
+  //   var row = Container(
+  //     margin: EdgeInsets.all(8.0),
+  //     child: Row(
+  //       children: <Widget>[
+  //         Container(
+  //           width: 100.0,
+  //           height: 150.0,
+  //           decoration: BoxDecoration(
+  //             borderRadius: BorderRadius.all(Radius.circular(8.0)),
+  //             color: Colors.redAccent,
+  //           ),
+  //           child: Image.asset(
+  //             subject['images']['large'],
+  //             height: 150.0,
+  //             width: 100.0,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  //   return Card(
+  //     color: Colors.blueGrey,
+  //     child: row,
+  //   );
+  // }
+
+  List<Widget> createInputs(){
+    return [
+      SizedBox(height: 20.0,),
+
+      new TextFormField(
+        decoration: new InputDecoration(labelText: 'Add your Comment'),
+      )
+    ];
+  }
+
+  List<Widget> createImage(){
+    return [
+      SizedBox(height: 20.0,),
+
+      new Image.asset(
+          'assets/images/feb.jpg',
+          fit: BoxFit.cover,
+      )
+    ];
+  }
+
+  List<Widget> createButtons(){
+    return [
+      new RaisedButton(
+        child: new Text("Post", style: new TextStyle(fontSize: 20.0),),
+        textColor: Colors.white,
+        color: Colors.cyan,
+
+        onPressed: validateAndSave,
+      ),
+    ];
+  }
+
+  List<Widget> viewComment(){
+    return[
+      Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('comments').snapshots(),
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot){
+              if(querySnapshot.hasError)
+                _showToast("Error has occur!");
+
+              if(querySnapshot.connectionState == ConnectionState.waiting){
+                return CircularProgressIndicator();
+              }else{
+
+                final list = (querySnapshot.data! as QuerySnapshot).docs;
+
+                return ListView.builder(
+                  itemBuilder: (context, index){
+                    return guestCommentUI(list[index]["comment"]);
+                  },
+                  itemCount: list.length,
+                );
+              }
+            },
+          )
+      )
+    ];
+  }
+
+  Widget guestImageUI(String image){
+    return new Card(
+      elevation: 10.0,
+      margin: EdgeInsets.all(15.0),
 
 
+      child: new Container(
+        padding:  new EdgeInsets.all(14.0),
+
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: <Widget>[
+            SizedBox(height: 10.0,),
+
+            new Text(
+              image,
+              style: Theme.of(context).textTheme.subtitle,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget guestCommentUI(String comment){
+    return new Card(
+      elevation: 10.0,
+      margin: EdgeInsets.all(15.0),
+
+
+      child: new Container(
+        padding:  new EdgeInsets.all(14.0),
+
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+
+          children: <Widget>[
+            SizedBox(height: 10.0,),
+
+            new Text(
+              comment,
+              style: Theme.of(context).textTheme.subtitle,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

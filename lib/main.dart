@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/admin_drawer.dart';
 import 'package:flutter_project/pages/homepage.dart';
 import 'package:flutter_project/pages/loginpage.dart';
+import 'package:flutter_project/pages/moderatorpage.dart';
+import 'package:flutter_project/pages/news_management_admin.dart';
 import 'package:flutter_project/providers/user_provider.dart';
 import 'package:flutter_project/services/firestore_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_project/pages/moderatorpage.dart';
-import 'package:flutter_project/pages/news_management_admin.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,6 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-
 
   User? users = FirebaseAuth.instance.currentUser;
 
@@ -37,7 +36,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          routes:  {
+          routes: {
             Routes.user: (context) => ModeratorPage(),
             Routes.news: (context) => NewsManagementAdminPage(),
             // Routes.newsfeed: (context) => NotesPage(),

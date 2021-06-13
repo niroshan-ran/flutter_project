@@ -5,6 +5,7 @@ import 'package:flutter_project/pages/reporterpage.dart';
 import 'guestpage.dart';
 import 'loginpage.dart';
 import 'moderatorpage.dart';
+import 'news_management_admin.dart';
 
 class HomePage extends StatefulWidget {
   final userEmail;
@@ -35,7 +36,7 @@ class _HomePageState extends State<HomePage> {
             for (var obj in userResultDocs) {
               switch (obj.get('position')) {
                 case 'moderator':
-                  return ModeratorPage(nickName: obj.get('nickName'));
+                  return ModeratorPage(nickName: obj.get('nickName'),email : obj.get('email'));
                 case 'reporter':
                   return ReporterPage(nickName: obj.get('nickName'));
                 case 'guest':

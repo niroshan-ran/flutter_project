@@ -20,7 +20,8 @@ class _NewsFeedState extends State<NewsFeed> {
   Widget build(BuildContext context) {
     return Scaffold(
         drawer: AppDrawer(),
-        appBar: AppBar(title: Text("News Feed")),
+        appBar: AppBar(title: Text("News Feed"),
+            backgroundColor: Colors.amber),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [

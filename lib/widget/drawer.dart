@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/reporterPages/newsfeed.dart';
+import 'package:flutter_project/pages/reporterPages/reportnews.dart';
+import 'package:flutter_project/routes/routes.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -14,17 +16,17 @@ class AppDrawer extends StatelessWidget {
               icon: Icons.my_library_books_sharp ,
               text: 'News Feed',
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, NewsFeed.routeName)),
+                  Navigator.pushReplacementNamed(context, Routes.newsfeed)),
           _createDrawerItem(
               icon: Icons.podcasts_rounded,
               text: 'Report News',
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, NewsFeed.routeName)),
+                  Navigator.pushReplacementNamed(context, Routes.reportnews)),
           _createDrawerItem(
               icon: Icons.person_pin,
               text: 'My Profile',
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, NewsFeed.routeName)),
+                  Navigator.pushReplacementNamed(context, Routes.reportnews)),
           ListTile(
             title: Text(''),
             onTap: () {},

@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
             for (var obj in userResultDocs) {
               switch (obj.get('position')) {
                 case 'moderator':
-                  return ModeratorPage(nickName: obj.get('nickName'));
+                  return ModeratorPage(nickName: obj.get('nickName'),email : obj.get('email'));
                 case 'reporter':
                   return ReporterPage(nickName: obj.get('nickName'));
                 case 'guest':

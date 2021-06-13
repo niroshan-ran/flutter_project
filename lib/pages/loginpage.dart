@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/registerpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
@@ -50,37 +51,6 @@ class _LoginPageState extends State<LoginPage> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.SNACKBAR,
         timeInSecForIosWeb: 1);
-  }
-
-  Future<void> _createUser() async {
-    if (_email != "" && _password != "") {
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: _email, password: _password);
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          focusPassword();
-          clearPassword();
-          _showToast("The password provided is too weak");
-        } else if (e.code == 'email-already-in-use') {
-          clearEmail();
-          clearPassword();
-          focusEmail();
-          _showToast("The account already exists for that email");
-        } else if (e.code == 'invalid-email') {
-          clearEmail();
-          clearPassword();
-          focusEmail();
-          _showToast("Invalid Email");
-        } else {
-          _showErrorToast("Unknown Error Occurred", e);
-        }
-      } catch (e) {
-        _showErrorToast("Unknown Error Occurred", e);
-      }
-    } else {
-      _showToast("Please Fill all the Required Fields");
-    }
   }
 
   Future<void> _login() async {
@@ -142,19 +112,26 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 decoration: InputDecoration(hintText: "Enter Password..."),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MaterialButton(
-                    onPressed: _login,
-                    child: Text("Login"),
-                  ),
-                  MaterialButton(
-                    onPressed: _createUser,
-                    child: Text("Create New Account"),
-                  ),
-                ],
-              )
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    MaterialButton(
+                      onPressed: _login,
+                      child: Text("Login"),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegisterPage()));
+                      },
+                      child: Text("New User?"),
+                    ),
+                  ],
+                ),
+              ),
             ],
           )),
     );

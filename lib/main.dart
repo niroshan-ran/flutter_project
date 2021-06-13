@@ -22,12 +22,12 @@ class MyApp extends StatelessWidget {
 class LandingPage extends StatelessWidget {
   LandingPage({Key? key}) : super(key: key);
 
-  final Future<FirebaseApp> _intialization = Firebase.initializeApp();
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _intialization,
+      future: _initialization,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Scaffold(
@@ -37,14 +37,14 @@ class LandingPage extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
-                Object? userdata = snapshot.data;
+                User? users = snapshot.data;
 
-                if (userdata == null) {
+                if (users == null) {
                   return LoginPage();
                 } else {
-                  return HomePage();
+                  return HomePage(userEmail: users.email);
                 }
               }
 

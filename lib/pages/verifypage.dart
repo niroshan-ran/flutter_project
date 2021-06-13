@@ -53,8 +53,8 @@ class _VerifyPageState extends State<VerifyPage> {
 
     if (user.emailVerified) {
       timer.cancel();
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LandingPage()));
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) => MyApp()));
     }
   }
 }

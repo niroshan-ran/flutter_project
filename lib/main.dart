@@ -3,59 +3,52 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/homepage.dart';
 import 'package:flutter_project/pages/loginpage.dart';
+import 'package:flutter_project/providers/user_provider.dart';
+import 'package:flutter_project/services/firestore_service.dart';
+import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: LandingPage(),
-    );
-  }
-}
 
-class LandingPage extends StatelessWidget {
-  LandingPage({Key? key}) : super(key: key);
-
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  User? users = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _initialization,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Scaffold(
-              body: Center(child: Text("Error: ${snapshot.error}")));
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {
-          return StreamBuilder(
+    final firestoreService = FirestoreService();
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => UserProvider()),
+          StreamProvider(
+              create: (context) =>
+                  firestoreService.getUsers(users!.email.toString()))
+        ],
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: StreamBuilder(
             stream: FirebaseAuth.instance.authStateChanges(),
             builder: (context, AsyncSnapshot snapshot) {
               if (snapshot.connectionState == ConnectionState.active) {
-                User? users = snapshot.data;
+                users = snapshot.data;
 
                 if (users == null) {
                   return LoginPage();
                 } else {
-                  return HomePage(userEmail: users.email);
+                  return HomePage();
                 }
               }
 
-              return Scaffold(
-                  body: Center(child: Text("Checking Authentication...")));
+              return Scaffold(body: Center(child: CircularProgressIndicator()));
             },
-          );
-        }
-
-        return Scaffold(body: Center(child: Text("Loading...")));
-      },
-    );
+          ),
+        ));
   }
 }

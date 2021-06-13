@@ -4,17 +4,21 @@ import 'package:flutter_project/models/users.dart';
 class FirestoreService {
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<void> saveUser(User user) {
+  Future<void> saveUser(ApplicationUser user) {
     return _db.collection('users').doc(user.email).set(user.toMap());
   }
 
-  Stream<List<User>> getUsers() {
-    return _db.collection('users').snapshots().map((snapshot) => snapshot.docs
-        .map((document) => User.fromFirestore(document.data()))
-        .toList());
+  Stream<List<ApplicationUser>> getUsers(String email) {
+    return _db
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((document) => ApplicationUser.fromFirestore(document.data()))
+            .toList());
   }
 
-  Future<void> updateUser(User user) {
+  Future<void> updateUser(ApplicationUser user) {
     return _db.collection('users').doc(user.email).update(user.toMap());
   }
 

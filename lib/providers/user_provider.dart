@@ -7,11 +7,12 @@ class UserProvider with ChangeNotifier {
   late String _email;
   late String _nickName;
   late String _position;
-  late String _userId;
 
   //Getters
   String get email => _email;
+
   String get nickName => _nickName;
+
   String get position => _position;
 
   //Setters
@@ -30,28 +31,16 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  loadValues(User user) {
-    _userId = user.userId;
-    _email = user.email;
-    _nickName = user.nickName;
-    _position = user.position;
+  loadValues(ApplicationUser user) {
+    _email = user.email!;
+    _nickName = user.nickName!;
+    _position = user.position!;
   }
 
   saveUser() {
-    // ignore: unnecessary_null_comparison
-    if (_userId == null) {
-      var newUser = User(
-          userId: email, email: email, nickName: nickName, position: position);
-      firestoreService.saveUser(newUser);
-    } else {
-      //Update
-      var updatedUser = User(
-          userId: _userId,
-          email: _email,
-          nickName: nickName,
-          position: position);
-      firestoreService.updateUser(updatedUser);
-    }
+    var newUser =
+        ApplicationUser(email: email, nickName: nickName, position: position);
+    firestoreService.saveUser(newUser);
   }
 
   removeUser(String userId) {

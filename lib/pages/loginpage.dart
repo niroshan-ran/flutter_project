@@ -85,6 +85,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    emailText.dispose();
+    passwordText.dispose();
+    focusPasswordNode.dispose();
+    focusEmailNode.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Login Page")),

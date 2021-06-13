@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/guestpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
@@ -14,6 +15,7 @@ class AddCommentPage extends StatefulWidget {
 
 class _AddCommentPageState extends State<AddCommentPage> {
   String _comment = "";
+
 
   var focusCommentNode = FocusNode();
 
@@ -52,7 +54,7 @@ class _AddCommentPageState extends State<AddCommentPage> {
     for (String cID in commentId) {
       if (cID != "") {
         FirebaseFirestore.instance.collection('comments').doc(cID).set({
-          'comment': _comment
+          'comment': _comment,
         }).catchError((error) {
           focusText(focusCommentNode);
           _showToast("Unknown Error Occurred. Please Try Again");
@@ -69,9 +71,10 @@ class _AddCommentPageState extends State<AddCommentPage> {
     if (_comment != "") {
       FirebaseFirestore.instance.collection("comments").add(
           {
-            "comment" : _comment
+            "comment" : _comment,
           }).then((value){
         print(value.id);
+        _showToast("Added Successfully");
       });
 
     } else{
@@ -79,13 +82,13 @@ class _AddCommentPageState extends State<AddCommentPage> {
     }
   }
 
-  Future<void> __editComment() async {
-
-  }
-
-  Future<void> __deleteComment() async {
-
-  }
+  // Future<void> __editComment() async {
+  //
+  // }
+  //
+  // Future<void> __deleteComment() async {
+  //
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -133,43 +136,39 @@ class _AddCommentPageState extends State<AddCommentPage> {
                     bottom: 0,
                     ),
                     onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => GuestPage()));
                       Future.wait([
                         Future.wait([_addComment()])
                             .then((value) => _addCommentDoc(value))
-                      ]).then((value) {
-                        for (int i in value) {
-                          if (i > -1) {
-                            Navigator.pop(context);
-                            _showToast("Added Successfully");
-                            break;
-                          }
-                        }
-                      });
+                      ]);
                     },
-                    child: Text("Add Comment"),
+                    child: Text("Post"),
                   ),
-                  MaterialButton(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      top: 70,
-                      right: 12,
-                      bottom: 0,
-                    ),
-                    onPressed: __editComment,
-                    child: Text("Edit Comment"),
-                  ),
-                  MaterialButton(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      top: 70,
-                      right: 12,
-                      bottom: 0,
-                    ),
-                    onPressed: __deleteComment,
-                    child: Text("Delete Comment"),
-                  ),
+                  // MaterialButton(
+                  //   padding: const EdgeInsets.only(
+                  //     left: 12,
+                  //     top: 70,
+                  //     right: 12,
+                  //     bottom: 0,
+                  //   ),
+                  //   onPressed: __editComment,
+                  //   child: Text("Edit Comment"),
+                  // ),
+                  // MaterialButton(
+                  //   padding: const EdgeInsets.only(
+                  //     left: 12,
+                  //     top: 70,
+                  //     right: 12,
+                  //     bottom: 0,
+                  //   ),
+                  //   onPressed: __deleteComment,
+                  //   child: Text("Delete Comment"),
+                  // ),
                 ],
-            )
+            ),
           ]
       )
     ));

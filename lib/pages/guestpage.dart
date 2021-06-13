@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/models/guestnews.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'addcommentpage.dart';
 
@@ -16,6 +17,13 @@ class GuestPage extends StatefulWidget {
 }
 
 class _GuestPageState extends State<GuestPage> {
+  void _showToast(message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.SNACKBAR,
+        timeInSecForIosWeb: 1);
+  }
 
   void signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -44,6 +52,31 @@ class _GuestPageState extends State<GuestPage> {
                   child: Text("Comment Pages"),
                 ),
               ],
+            ),
+            Expanded(
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance.collection('comments').snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot){
+                    if(querySnapshot.hasError)
+                      _showToast("Error has occur!");
+
+                    if(querySnapshot.connectionState == ConnectionState.waiting){
+                      return CircularProgressIndicator();
+                    }else{
+
+                      final list = (querySnapshot.data! as QuerySnapshot).docs;
+
+                      return ListView.builder(
+                        itemBuilder: (context, index){
+                          return ListTile(
+                              title : Text(list[index]["comment"])
+                          );
+                        },
+                        itemCount: list.length,
+                      );
+                    }
+                  },
+                )
             )
           ]),
         ));

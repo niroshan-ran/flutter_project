@@ -29,7 +29,6 @@ class MyApp extends StatelessWidget {
 
 class LandingPage extends StatelessWidget {
   LandingPage({Key? key}) : super(key: key);
-
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override

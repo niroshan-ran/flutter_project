@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,9 +47,12 @@ class _NewsManagementAdminPageState extends State<NewsManagementAdminPage> {
               ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
               ElevatedButton(
                   onPressed: (){
-                    snapshot.data!.docs[index].reference.delete().whenComplete(() => Navigator.pop(context));
+                    snapshot.data!.docs[index].reference
+                        .update({
+                          "isPublish" : false
+                        }).whenComplete(() => Navigator.pop(context));
                   },
-                  child: Text('Delete')
+                  child: Text('Reject')
               )
             ],
           );
@@ -55,11 +60,34 @@ class _NewsManagementAdminPageState extends State<NewsManagementAdminPage> {
     );
   }
 
+  approveArticle({required AsyncSnapshot<QuerySnapshot<Object?>> snapshot, required int index}){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text('Approve Article'),
+            content: Text('Are you sure you want to Approve ?'),
+            actions: [
+              ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
+              ElevatedButton(
+                  onPressed: (){
+                    snapshot.data!.docs[index].reference
+                        .update({
+                      "isPublish" : false
+                    }).whenComplete(() => Navigator.pop(context));
+                  },
+                  child: Text('Approve')
+              )
+            ],
+          );
+        }
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Moderator Page")),
+        appBar: AppBar(title: Text("News Admin")),
         drawer: AdminDrawer(nickName: widget.nickName,email: widget.email,),
         body: Container(
           color: Colors.black12,
@@ -81,11 +109,12 @@ class _NewsManagementAdminPageState extends State<NewsManagementAdminPage> {
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: ListTile(
-                                  title: Text(doc['title'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600),),
+                                  title: Center(child: Text(doc['title'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,),)),
                                   subtitle: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
+                                      SizedBox(height: 10,),
                                       Image.network(
                                         doc['image'],
                                         height: 150,
@@ -93,14 +122,33 @@ class _NewsManagementAdminPageState extends State<NewsManagementAdminPage> {
                                         fit: BoxFit.cover,
                                       ),
                                       SizedBox(height: 10,),
-                                      Text(doc['description'],style: TextStyle(fontSize: 10,fontStyle: FontStyle.italic),),
+                                      Text(doc['description'],style: TextStyle(fontSize: 12,fontStyle: FontStyle.italic),),
+                                      SizedBox(height: 6,),
+                                      Text(doc['isPublished'] == true ?'Active':'Deactive',style: TextStyle(fontSize: 12,fontStyle: FontStyle.italic,fontWeight: FontWeight.w600),),
                                       SizedBox(height: 20,),
-                                      Text(doc['nickName'],style: TextStyle(color: Colors.black38),),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Text(doc['nickName'],style: TextStyle(color: Colors.black38,fontStyle: FontStyle.italic,),),
+                                        ],
+                                      ),
+                                      SizedBox(height: 20,),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                              onPressed: (){
+                                                approveArticle(snapshot: snapshot,index: index);
+                                              },
+                                              icon: Icon(Icons.done_all,color: Colors.green,size: 40,)),
+                                          IconButton(
+                                              onPressed: (){
+                                                rejectArticle(snapshot: snapshot,index: index);
+                                              },
+                                              icon: Icon(Icons.block,color: Colors.red,size: 40,))
+                                        ],
+                                      )
                                     ],
-                                  ),
-                                  trailing: IconButton(
-                                    icon: Icon(Icons.delete,color: Colors.red,),
-                                    onPressed: (){rejectArticle(snapshot: snapshot,index: index);},
                                   ),
                                 ),
                               ),

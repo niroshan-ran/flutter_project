@@ -15,24 +15,6 @@ class AdminDrawer extends StatefulWidget {
 }
 
 class _AdminDrawerState extends State<AdminDrawer> {
-  navigateToUserMng(){
-    Navigator.of(context).pop();
-    Navigator.of(context).push(
-        PageRouteBuilder(pageBuilder: (context, _, __) {
-          return ModeratorPage(nickName:widget.nickName,email : widget.email);
-        }
-        ));
-  }
-
-  navigateToNewAdmin(){
-    Navigator.of(context).pop();
-    Navigator.of(context).push(
-        PageRouteBuilder(pageBuilder: (context, _, __) {
-          return new NewsManagementAdminPage(nickName:widget.nickName,email : widget.email);
-        }
-        ));
-  }
-
   void signOut() async {
     await FirebaseAuth.instance.signOut();
   }

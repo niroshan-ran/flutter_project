@@ -3,7 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_project/pages/verifypage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
+import 'loginpage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -96,7 +99,6 @@ class _RegisterPageState extends State<RegisterPage> {
           'position': _position
         }).catchError((error) {
           clearAllText();
-          focusText(focusEmailNode);
           _showToast("Unknown Error Occurred. Please Try Again");
         });
 
@@ -256,6 +258,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MaterialButton(
+                      color: Colors.blue,
                       onPressed: () {
                         Future.wait([
                           Future.wait([_createUser()])
@@ -263,8 +266,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         ]).then((value) {
                           for (int i in value) {
                             if (i > -1) {
-                              Navigator.pop(context);
-                              _showToast("Registration is Successful");
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => VerifyPage()));
                               break;
                             }
                           }
@@ -273,8 +277,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Text("Register"),
                     ),
                     MaterialButton(
+                      color: Colors.grey,
                       onPressed: () {
-                        Navigator.pop(context);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => LoginPage()));
                       },
                       child: Text("Already a User?"),
                     ),

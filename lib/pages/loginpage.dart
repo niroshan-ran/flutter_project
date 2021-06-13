@@ -117,15 +117,15 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MaterialButton(
+                      color: Colors.blue,
                       onPressed: _login,
                       child: Text("Login"),
                     ),
                     MaterialButton(
+                      color: Colors.grey,
                       onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RegisterPage()));
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => RegisterPage()));
                       },
                       child: Text("New User?"),
                     ),

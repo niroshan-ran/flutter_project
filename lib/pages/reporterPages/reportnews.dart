@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/reporterPages/photoupload.dart';
 import 'package:flutter_project/widget/drawer.dart';
 
 class ReportNews extends StatefulWidget{
@@ -41,7 +42,11 @@ class _ReportNewsState extends State<ReportNews>{
                 icon: Icon(Icons.add_a_photo),
                 iconSize: 40,
                 color: Colors.white,
-                onPressed: () {  },
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    return new UploadPhotoPage();
+                  }));
+                },
               ),
 
             ],

@@ -23,7 +23,7 @@ class _ReporterPageState extends State<ReporterPage> {
     return new MaterialApp(
       title: 'Flutter Demo',
       theme: new ThemeData(
-          primarySwatch: Colors.indigo
+          primarySwatch: Colors.amber
       ),
       home: NewsFeed(),
       routes:  {

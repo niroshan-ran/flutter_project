@@ -140,45 +140,64 @@ class _UploadPhotoPageState extends State<UploadPhotoPage>{
       width: 550.0,
       child: Form(
         key: formKey,
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              decoration: InputDecoration(
-                  labelText: 'Title'),
-              validator: (value){
-                return value!.isEmpty ? 'Title is Required' : null;
-              },
-              onSaved: (value){
-                _title = value!;
-              },
-            ),
-            SizedBox(height: 15.0,),
-
-            Image.file(sampleImage, height: 330.0,width: 600.0,),
-            SizedBox(height: 15.0,),
-
-            TextFormField(
-              decoration: InputDecoration(
-                  labelText: 'Description'),
-              validator: (value){
-                return value!.isEmpty ? 'Description is Required' : null;
-              },
-              onSaved: (value){
-                _description = value!;
-              },
-            ),
-            SizedBox(height: 15.0,),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.amber,
-                onPrimary: Colors.white,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(32),
+          child: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.all(12),
+                height: 50.0,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                      labelText: 'Title'),
+                  validator: (value){
+                    return value!.isEmpty ? 'Title is Required' : null;
+                  },
+                  onSaved: (value){
+                    _title = value!;
+                  },
+                ),
               ),
-              onPressed: uploadStatusImage,
-              child: Text("Add a New Post"),
 
-            )
-          ],
-        ),
+              Container(
+                margin: EdgeInsets.all(12),
+                height: 300.0,
+                child: Image.file(sampleImage, height: 330.0,width: 600.0,),
+              ),
+
+              Container(
+                margin: EdgeInsets.all(12),
+                height: 50.0,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                      labelText: 'Description'),
+                  validator: (value){
+                    return value!.isEmpty ? 'Description is Required' : null;
+                  },
+                  onSaved: (value){
+                    _description = value!;
+                  },
+                ),
+              ),
+
+              Container(
+                  margin: EdgeInsets.all(12),
+                  height: 40.0,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.amber,
+                      onPrimary: Colors.white,
+                    ),
+                    onPressed: uploadStatusImage,
+                    child: Text("Add a New Post"),
+
+                  )
+              )
+
+            ],
+          ),
+        )
+
       ),
     );
   }

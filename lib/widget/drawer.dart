@@ -65,7 +65,7 @@ class AppDrawer extends StatelessWidget {
               icon: Icons.person_pin,
               text: 'My Profile',
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.reportnews)),
+                  Navigator.pushReplacementNamed(context, Routes.myprofile)),
           ListTile(
             title: Text(''),
             onTap: () {},

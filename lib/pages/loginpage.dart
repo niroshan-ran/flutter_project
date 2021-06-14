@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_email != "" && _password != "") {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance
+        FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
@@ -96,54 +96,54 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text("Login Page")),
+      appBar: AppBar(title: Text("Login")),
       body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                focusNode: focusEmailNode,
-                controller: emailText,
-                onChanged: (value) {
-                  _email = value;
-                },
-                decoration: InputDecoration(hintText: "Enter Email..."),
-              ),
-              TextField(
-                focusNode: focusPasswordNode,
-                controller: passwordText,
-                obscureText: true,
-                enableSuggestions: false,
-                autocorrect: false,
-                onChanged: (value) {
-                  _password = value;
-                },
-                decoration: InputDecoration(hintText: "Enter Password..."),
-              ),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    MaterialButton(
-                      color: Colors.blue,
-                      onPressed: _login,
-                      child: Text("Login"),
-                    ),
-                    MaterialButton(
-                      color: Colors.grey,
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
-                      },
-                      child: Text("New User?"),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              focusNode: focusEmailNode,
+              controller: emailText,
+              textInputAction: TextInputAction.next,
+              onEditingComplete: () => node.nextFocus(),
+              onChanged: (value) {
+                _email = value;
+              },
+              decoration: InputDecoration(hintText: "Enter Email..."),
+            ),
+            TextField(
+              focusNode: focusPasswordNode,
+              controller: passwordText,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => node.unfocus(),
+              onChanged: (value) {
+                _password = value;
+              },
+              decoration: InputDecoration(hintText: "Enter Password..."),
+            ),
+            MaterialButton(
+              color: Colors.blue,
+              onPressed: _login,
+              child: Text("Login"),
+            ),
+            MaterialButton(
+              color: Colors.grey,
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => RegisterPage()));
+              },
+              child: Text("New User?"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

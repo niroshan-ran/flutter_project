@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/reporterPages/myNewsList.dart';
+import 'package:flutter_project/pages/reporterPages/newsfeed.dart';
 import 'package:flutter_project/pages/reporterPages/photoupload.dart';
 import 'package:flutter_project/widget/drawer.dart';
 
@@ -35,7 +37,11 @@ class _ReportNewsState extends State<ReportNews>{
                 icon: Icon(Icons.calendar_today),
                 iconSize: 40,
                 color: Colors.white,
-                onPressed: () {  },
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context){
+                    return new MyNewsPage();
+                  }));
+                },
               ),
 
               IconButton(

@@ -23,7 +23,8 @@ class _UploadPhotoPageState extends State<UploadPhotoPage>{
 
 
   late final File sampleImage;
-  late final String _myValue;
+  late final String _description;
+  late final String _title;
   late final String url;
   final formKey = new GlobalKey<FormState>();
 
@@ -90,9 +91,9 @@ class _UploadPhotoPageState extends State<UploadPhotoPage>{
     CollectionReference newsDataRef = FirebaseFirestore.instance.collection('News');
 
     var data = {
-      "title": "test title",
+      "title": _title,
       "image": url,
-      "description": _myValue,
+      "description": _description,
       "isPublish": false,
       "date": date,
       "time": time,
@@ -117,12 +118,13 @@ class _UploadPhotoPageState extends State<UploadPhotoPage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Upload Image"),
+        title: Text("Add News"),
         centerTitle: true,
       ),
 
       body: Center(
-        child: sampleImage==null? Text("Select an Image"): enableUpload(),
+        // ignore: unrelated_type_equality_checks
+        child: sampleImage.length()==0? Text("Select an Image"): enableUpload(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: getImage,
@@ -135,12 +137,26 @@ class _UploadPhotoPageState extends State<UploadPhotoPage>{
 
   Widget enableUpload(){
     return Container(
+      width: 550.0,
       child: Form(
         key: formKey,
         child: Column(
           children: <Widget>[
+            TextFormField(
+              decoration: InputDecoration(
+                  labelText: 'Title'),
+              validator: (value){
+                return value!.isEmpty ? 'Title is Required' : null;
+              },
+              onSaved: (value){
+                _title = value!;
+              },
+            ),
+            SizedBox(height: 15.0,),
+
             Image.file(sampleImage, height: 330.0,width: 600.0,),
             SizedBox(height: 15.0,),
+
             TextFormField(
               decoration: InputDecoration(
                   labelText: 'Description'),
@@ -148,7 +164,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage>{
                 return value!.isEmpty ? 'Description is Required' : null;
               },
               onSaved: (value){
-                _myValue = value!;
+                _description = value!;
               },
             ),
             SizedBox(height: 15.0,),

@@ -74,27 +74,6 @@ class _MyNewsPageState extends State<MyNewsPage> {
                                       textAlign: TextAlign.center),
                                 ],
 
-
-
-                                // title: Center(child: Text(doc['title'],style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600,),)),
-                                // subtitle: Column(
-                                //   mainAxisAlignment: MainAxisAlignment.start,
-                                //   crossAxisAlignment: CrossAxisAlignment.start,
-                                //   children: [
-                                //     SizedBox(height: 10,),
-                                //     Image.network(
-                                //       doc['image'],
-                                //       height: 150,
-                                //       width: 300,
-                                //       fit: BoxFit.cover,
-                                //     ),
-                                //     SizedBox(height: 10,),
-                                //     Text(doc['description'],style: TextStyle(fontSize: 12,fontStyle: FontStyle.italic),),
-                                //     SizedBox(height: 20,),
-                                //
-                                //
-                                //   ],
-                                // ),
                               ),
                             ),
                           );

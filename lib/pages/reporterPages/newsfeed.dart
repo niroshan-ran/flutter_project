@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/widget/drawer.dart';
@@ -13,10 +14,8 @@ class NewsFeed extends StatefulWidget {
 }
 
 class _NewsFeedState extends State<NewsFeed> {
-  void signOut() async {
-    await FirebaseAuth.instance.signOut();
-    Navigator.of(context, rootNavigator: true).pop();
-  }
+
+  final CollectionReference newsRef = FirebaseFirestore.instance.collection('News');
 
   @override
   Widget build(BuildContext context) {
@@ -24,52 +23,94 @@ class _NewsFeedState extends State<NewsFeed> {
         drawer: AppDrawer(),
         appBar: AppBar(title: Text("News Feed"),
             backgroundColor: Colors.amber),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text('Welcome Reporter ${widget.nickName}'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MaterialButton(
-                  // onPressed: () => logoutAlert(context),
-                  onPressed: () {  },
-                  child: Text('Sign Out'),
-                )
-              ],
-            )
-          ]),
-        ));
+        body: Container(
+          color: Colors.black12,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Expanded(
+                  child: StreamBuilder(
+                    stream: newsRef.snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      return ListView.builder(
+                          itemCount: snapshot.data?.docs.length ?? 0,
+                          itemBuilder: (context,index){
+                            var doc = snapshot.data!.docs[index].data();
+                            doc : (doc as Map)["doc"].toString();
+                            return Card(
+                              margin: EdgeInsets.all(15.0),
+                              elevation: 10,
+                              child: Container(
+                                padding: new EdgeInsets.all(14.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            doc['date'],
+                                            style: Theme.of(context).textTheme.subtitle1,
+                                            textAlign: TextAlign.center),
+                                        Text(
+                                            doc['time'],
+                                            style: Theme.of(context).textTheme.subtitle1,
+                                            textAlign: TextAlign.center),
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 10,),
+
+                                    Image.network(
+                                      doc['image'],
+                                      fit: BoxFit.cover,
+                                    ),
+
+                                    SizedBox(height: 10,),
+
+                                    Text(
+                                        doc['description'],
+                                        style: Theme.of(context).textTheme.subtitle2,
+                                        textAlign: TextAlign.center),
+                                  ],
+
+                                ),
+                              ),
+                            );
+                          }
+                      );
+                    },
+                  )
+              )
+            ]),
+          ),
+        )
+
+
+
+
+
+        // Padding(
+        //   padding: const EdgeInsets.all(16.0),
+        //   child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        //     Text('Welcome Reporter ${widget.nickName}'),
+        //     Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: [
+        //         MaterialButton(
+        //           // onPressed: () => logoutAlert(context),
+        //           onPressed: () {  },
+        //           child: Text('Sign Out'),
+        //         )
+        //       ],
+        //     )
+        //   ]),
+        // )
+
+
+
+    );
   }
 
- void logoutAlert(context){
-   Alert(
-     context: context,
-     type: AlertType.warning,
-     title: "Log out",
-     desc: "Are you sure you want to log out?",
-     buttons: [
-       DialogButton(
-         child: Text(
-           "Log out",
-           style: TextStyle(color: Colors.white, fontSize: 20),
-         ),
-         onPressed: signOut,
-         color: Color.fromRGBO(0, 179, 134, 1.0),
-       ),
-       DialogButton(
-         child: Text(
-           "Cancel",
-           style: TextStyle(color: Colors.white, fontSize: 20),
-         ),
-         onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-         gradient: LinearGradient(colors: [
-           Color.fromRGBO(116, 116, 191, 1.0),
-           Color.fromRGBO(52, 138, 199, 1.0)
-         ]),
-       )
-     ],
-   ).show();
- }
 
 }

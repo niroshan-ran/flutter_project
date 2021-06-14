@@ -1,21 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/models/guestnews.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_project/pages/guest_drawer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'addcommentpage.dart';
 
 class GuestPage extends StatefulWidget {
   final nickName;
-  const GuestPage({Key? key, @required this.nickName}) : super(key: key);
+  final email;
+
+  static const String routeName = '/guestManagement';
+
+  const GuestPage({Key? key, @required this.nickName,@required this.email}) : super(key: key);
 
   @override
   _GuestPageState createState() => _GuestPageState();
 }
 
 class _GuestPageState extends State<GuestPage> {
+  bool viewVisible = false ;
+
   void _showToast(message) {
     Fluttertoast.showToast(
         msg: message,
@@ -33,33 +39,14 @@ class _GuestPageState extends State<GuestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Guest Page")),
+        drawer: GuestDrawer(nickName: widget.nickName,email: widget.email,),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text('Welcome Guest ${widget.nickName}'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MaterialButton(
-                  onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddCommentPage()));
-                  },
-                  child: new Text("Comment Us", style: new TextStyle(fontSize: 20.0),),
-                  textColor: Colors.white,
-                  color: Colors.cyan,
-                ),
-                MaterialButton(
-                  onPressed: signOut,
-                  child: new Text("Sign Out", style: new TextStyle(fontSize: 20.0),),
-                  textColor: Colors.white,
-                  color: Colors.cyan,
-                ),
-              ],
-            ),
             Text('All Guest News'),
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('guest_news').snapshots(),
+                  stream: FirebaseFirestore.instance.collection('guest_news').where("isPublished", isEqualTo: true).snapshots(),
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot){
                     if(querySnapshot.hasError)
                       _showToast("Error has occur!");
@@ -72,7 +59,7 @@ class _GuestPageState extends State<GuestPage> {
 
                       return ListView.builder(
                         itemBuilder: (context, index){
-                          return guestNewsUI(list[index]["title"], list[index]["description"],list[index]["image"], list[index]["nickName"]);
+                          return guestNewsUI(list[index]["title"], list[index]["description"],list[index]["image"]);
                           // return ListTile(
                           //   title : Text(list[index]["title"]),
                           //   subtitle : Text(list[index]["image"])
@@ -88,7 +75,7 @@ class _GuestPageState extends State<GuestPage> {
         ));
   }
 
-  Widget guestNewsUI(String title, String description, String image, String nickName){
+  Widget guestNewsUI(String title, String description, String image){
     return new Card(
       elevation: 10.0,
       margin: EdgeInsets.all(15.0),
@@ -98,7 +85,7 @@ class _GuestPageState extends State<GuestPage> {
         padding:  new EdgeInsets.all(14.0),
 
         child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
 
           children: <Widget>[
             new Row(
@@ -106,12 +93,6 @@ class _GuestPageState extends State<GuestPage> {
               children: [
                 new Text(
                   title,
-                  style: Theme.of(context).textTheme.subtitle,
-                  textAlign: TextAlign.center,
-                ),
-
-                new Text(
-                  nickName,
                   style: Theme.of(context).textTheme.subtitle,
                   textAlign: TextAlign.center,
                 ),
@@ -128,6 +109,15 @@ class _GuestPageState extends State<GuestPage> {
               description,
               style: Theme.of(context).textTheme.subtitle,
               textAlign: TextAlign.center,
+            ),
+
+            SizedBox(height: 40.0,),
+
+            new IconButton(
+              icon: Icon(Icons.comment,color: Colors.cyan,),
+              onPressed: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddCommentPage()));
+              },
             ),
           ],
         ),

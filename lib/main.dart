@@ -28,8 +28,10 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (context) => UserProvider()),
           StreamProvider(
-              create: (context) =>
-                  firestoreService.getUsers(users!.email.toString()))
+            create: (context) =>
+                firestoreService.getUsers(users!.email.toString()),
+            initialData: [],
+          )
         ],
         child: MaterialApp(
           title: 'Flutter Demo',

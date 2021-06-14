@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_project/pages/loading_class.dart';
 import 'package:flutter_project/pages/verifypage.dart';
 import 'package:flutter_project/providers/user_provider.dart';
+import 'package:flutter_project/services/firestore_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
@@ -21,8 +23,9 @@ class RegisterPage extends StatefulWidget {
 enum Positions { guest, reporter, moderator }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final firestoreService = FirestoreService();
   String _password = "", _confirmPassword = "";
-
+  final GlobalKey _loaderDialog = new GlobalKey();
   var focusEmailNode = FocusNode();
   var focusPasswordNode = FocusNode();
   var focusNickNameNode = FocusNode();
@@ -126,147 +129,161 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-    final node = FocusScope.of(context);
-    final ui.Size logicalSize = MediaQuery.of(context).size;
-    final double _height = logicalSize.height;
-    return Scaffold(
-        appBar: AppBar(title: Text("Register")),
-        body: SingleChildScrollView(
-            child: new Container(
-                constraints:
-                    BoxConstraints(minHeight: 490, maxHeight: _height - 100),
-                child: Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      TextField(
-                        focusNode: focusEmailNode,
-                        controller: emailText,
-                        textInputAction: TextInputAction.next,
-                        onEditingComplete: () => node.nextFocus(),
-                        onChanged: (value) {
-                          userProvider.changeEmail(value);
-                        },
-                        decoration: InputDecoration(hintText: "Enter Email..."),
-                      ),
-                      TextField(
-                        focusNode: focusNickNameNode,
-                        controller: nickNameText,
-                        textInputAction: TextInputAction.next,
-                        onEditingComplete: () => node.nextFocus(),
-                        onChanged: (value) {
-                          userProvider.changeNickName(value);
-                        },
-                        decoration:
-                            InputDecoration(hintText: "Enter Nick Name..."),
-                      ),
-                      TextField(
-                        focusNode: focusPasswordNode,
-                        controller: passwordText,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        textInputAction: TextInputAction.next,
-                        onEditingComplete: () => node.nextFocus(),
-                        onChanged: (value) {
-                          _password = value;
-                        },
-                        decoration:
-                            InputDecoration(hintText: "Enter Password..."),
-                      ),
-                      TextField(
-                        focusNode: focusConfirmPasswordNode,
-                        controller: confirmPasswordText,
-                        obscureText: true,
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => node.unfocus(),
-                        onChanged: (value) {
-                          _confirmPassword = value;
-                        },
-                        decoration:
-                            InputDecoration(hintText: "Confirm Password..."),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 0),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                  child: Text(
-                                "Select the Position",
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontSize: 14),
-                              )))),
-                      ListView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        children: [
-                          RadioListTile<Positions>(
-                              title: const Text('Guest'),
-                              value: Positions.guest,
-                              groupValue: _character,
-                              onChanged: (Positions? value) {
-                                setState(() {
-                                  _character = value;
-                                  userProvider.changePosition('guest');
-                                });
-                              }),
-                          RadioListTile<Positions>(
-                              title: const Text('Reporter'),
-                              value: Positions.reporter,
-                              groupValue: _character,
-                              onChanged: (Positions? value) {
-                                setState(() {
-                                  _character = value;
-                                  userProvider.changePosition('reporter');
-                                });
-                              }),
-                          RadioListTile<Positions>(
-                              title: const Text('Moderator'),
-                              value: Positions.moderator,
-                              groupValue: _character,
-                              onChanged: (Positions? value) {
-                                setState(() {
-                                  _character = value;
-                                  userProvider.changePosition('moderator');
-                                });
-                              }),
+    return ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      builder: (context, widget) {
+        final userProvider = Provider.of<UserProvider>(context);
+        final node = FocusScope.of(context);
+        final ui.Size logicalSize = MediaQuery.of(context).size;
+        final double _height = logicalSize.height;
+        return Scaffold(
+            appBar: AppBar(title: Text("Register")),
+            body: SingleChildScrollView(
+                child: new Container(
+                    constraints: BoxConstraints(
+                        minHeight: 490, maxHeight: _height - 100),
+                    child: Padding(
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          TextField(
+                            focusNode: focusEmailNode,
+                            controller: emailText,
+                            textInputAction: TextInputAction.next,
+                            onEditingComplete: () => node.nextFocus(),
+                            onChanged: (value) {
+                              userProvider.changeEmail(value);
+                            },
+                            decoration:
+                                InputDecoration(hintText: "Enter Email..."),
+                          ),
+                          TextField(
+                            focusNode: focusNickNameNode,
+                            controller: nickNameText,
+                            textInputAction: TextInputAction.next,
+                            onEditingComplete: () => node.nextFocus(),
+                            onChanged: (value) {
+                              userProvider.changeNickName(value);
+                            },
+                            decoration:
+                                InputDecoration(hintText: "Enter Nick Name..."),
+                          ),
+                          TextField(
+                            focusNode: focusPasswordNode,
+                            controller: passwordText,
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            textInputAction: TextInputAction.next,
+                            onEditingComplete: () => node.nextFocus(),
+                            onChanged: (value) {
+                              _password = value;
+                            },
+                            decoration:
+                                InputDecoration(hintText: "Enter Password..."),
+                          ),
+                          TextField(
+                            focusNode: focusConfirmPasswordNode,
+                            controller: confirmPasswordText,
+                            obscureText: true,
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) => node.unfocus(),
+                            onChanged: (value) {
+                              _confirmPassword = value;
+                            },
+                            decoration: InputDecoration(
+                                hintText: "Confirm Password..."),
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 0),
+                              child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                      child: Text(
+                                    "Select the Position",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(fontSize: 14),
+                                  )))),
+                          ListView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            children: [
+                              RadioListTile<Positions>(
+                                  title: const Text('Guest'),
+                                  value: Positions.guest,
+                                  groupValue: _character,
+                                  onChanged: (Positions? value) {
+                                    setState(() {
+                                      _character = value;
+                                      userProvider.changePosition('guest');
+                                    });
+                                  }),
+                              RadioListTile<Positions>(
+                                  title: const Text('Reporter'),
+                                  value: Positions.reporter,
+                                  groupValue: _character,
+                                  onChanged: (Positions? value) {
+                                    setState(() {
+                                      _character = value;
+                                      userProvider.changePosition('reporter');
+                                    });
+                                  }),
+                              RadioListTile<Positions>(
+                                  title: const Text('Moderator'),
+                                  value: Positions.moderator,
+                                  groupValue: _character,
+                                  onChanged: (Positions? value) {
+                                    setState(() {
+                                      _character = value;
+                                      userProvider.changePosition('moderator');
+                                    });
+                                  }),
+                            ],
+                          ),
+                          MaterialButton(
+                            color: Colors.blue,
+                            onPressed: () {
+                              LoadingDialog.showLoadingDialog(
+                                  context, _loaderDialog);
+                              Future.wait([_createUser(userProvider)])
+                                  .then((value) {
+                                for (bool val in value) {
+                                  if (val) {
+                                    Future.wait([
+                                      firestoreService.saveUser(
+                                          userProvider.getCurrentUser())
+                                    ]).whenComplete(() {
+                                      LoadingDialog.hideDialog(context);
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  VerifyPage()));
+                                    });
+                                  } else {
+                                    continue;
+                                  }
+                                }
+                              });
+                            },
+                            child: Text("Register"),
+                          ),
+                          MaterialButton(
+                            color: Colors.grey,
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()));
+                            },
+                            child: Text("Already a User?"),
+                          ),
                         ],
                       ),
-                      MaterialButton(
-                        color: Colors.blue,
-                        onPressed: () {
-                          Future.wait([_createUser(userProvider)])
-                              .then((value) {
-                            for (bool val in value) {
-                              if (val) {
-                                userProvider.saveUser();
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) => VerifyPage()));
-                              } else {
-                                continue;
-                              }
-                            }
-                          });
-                        },
-                        child: Text("Register"),
-                      ),
-                      MaterialButton(
-                        color: Colors.grey,
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()));
-                        },
-                        child: Text("Already a User?"),
-                      ),
-                    ],
-                  ),
-                ))));
+                    ))));
+      },
+    );
   }
 }

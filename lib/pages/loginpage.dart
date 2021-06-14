@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/pages/loading_class.dart';
 import 'package:flutter_project/pages/registerpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -11,6 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final GlobalKey _loaderDialog = new GlobalKey();
   String _email = "", _password = "";
 
   final emailText = TextEditingController();
@@ -56,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_email != "" && _password != "") {
       try {
-        FirebaseAuth.instance
+        await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
@@ -130,7 +132,11 @@ class _LoginPageState extends State<LoginPage> {
             ),
             MaterialButton(
               color: Colors.blue,
-              onPressed: _login,
+              onPressed: () {
+                LoadingDialog.showLoadingDialog(context, _loaderDialog);
+                Future.wait([_login()])
+                    .whenComplete(() => LoadingDialog.hideDialog(context));
+              },
               child: Text("Login"),
             ),
             MaterialButton(

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/models/users.dart';
-import 'package:flutter_project/services/firestore_service.dart';
 
 class UserProvider with ChangeNotifier {
-  final firestoreService = FirestoreService();
   late String _email;
   late String _nickName;
   late String _position;
@@ -37,13 +35,8 @@ class UserProvider with ChangeNotifier {
     _position = user.position!;
   }
 
-  saveUser() {
-    var newUser =
-        ApplicationUser(email: email, nickName: nickName, position: position);
-    firestoreService.saveUser(newUser);
-  }
-
-  removeUser(String userId) {
-    firestoreService.removeUser(userId);
+  getCurrentUser() {
+    return ApplicationUser(
+        email: email, nickName: nickName, position: position);
   }
 }

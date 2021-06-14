@@ -6,14 +6,30 @@ import 'package:flutter_project/pages/homepage.dart';
 import 'package:flutter_project/pages/loginpage.dart';
 import 'package:flutter_project/pages/moderatorpage.dart';
 import 'package:flutter_project/pages/news_management_admin.dart';
-import 'package:flutter_project/providers/user_provider.dart';
-import 'package:flutter_project/services/firestore_service.dart';
-import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(MainApp());
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        routes: {
+          Routes.user: (context) => ModeratorPage(),
+          Routes.news: (context) => NewsManagementAdminPage(),
+          // Routes.newsfeed: (context) => NotesPage(),
+        },
+        home: MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -23,42 +39,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firestoreService = FirestoreService();
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (context) => UserProvider()),
-          StreamProvider(
-            create: (context) =>
-                firestoreService.getUsers(users!.email.toString()),
-            initialData: [],
-          )
-        ],
-        child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          routes: {
-            Routes.user: (context) => ModeratorPage(),
-            Routes.news: (context) => NewsManagementAdminPage(),
-            // Routes.newsfeed: (context) => NotesPage(),
-          },
-          home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                users = snapshot.data;
+    return StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, AsyncSnapshot<User?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            String email = "";
+            users = snapshot.data;
 
-                if (users == null) {
-                  return LoginPage();
-                } else {
-                  return HomePage();
-                }
-              }
+            if (users != null) {
+              email = users!.email!;
+              return HomePage(email: email);
+            } else {
+              return LoginPage();
+            }
+          }
 
-              return Scaffold(body: Center(child: CircularProgressIndicator()));
-            },
-          ),
-        ));
+          return LoginPage();
+        });
   }
 }

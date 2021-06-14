@@ -14,18 +14,17 @@ class AddCommentPage extends StatefulWidget {
 
 
 class _AddCommentPageState extends State<AddCommentPage> {
+  String _name = "";
   String _comment = "";
 
 
   var focusCommentNode = FocusNode();
+  var focusNameNode = FocusNode();
 
   final commentText = TextEditingController();
+  final nameText = TextEditingController();
 
   void validateAndSave(){
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GuestPage()));
     Future.wait([
       Future.wait([_addComment()])
           .then((value) => _addCommentDoc(value))
@@ -41,6 +40,11 @@ class _AddCommentPageState extends State<AddCommentPage> {
     textFieldController.clear();
     if(variableString == "comment"){
       _comment = "";
+    }else if(variableString == "comment"){
+      _name = "";
+    }else{
+      _comment = "";
+      _name = "";
     }
   }
 
@@ -65,6 +69,7 @@ class _AddCommentPageState extends State<AddCommentPage> {
     for (String cID in commentId) {
       if (cID != "") {
         FirebaseFirestore.instance.collection('comments').doc(cID).set({
+          'name':_name,
           'comment': _comment,
         }).catchError((error) {
           focusText(focusCommentNode);
@@ -79,9 +84,10 @@ class _AddCommentPageState extends State<AddCommentPage> {
   }
 
   Future<void> _addComment() async{
-    if (_comment != "") {
+    if (_comment != "" && _name != "") {
       FirebaseFirestore.instance.collection("comments").add(
           {
+            "name" : _name,
             "comment" : _comment,
           }).then((value){
         print(value.id);
@@ -92,14 +98,6 @@ class _AddCommentPageState extends State<AddCommentPage> {
       _showToast("Please Fill all the Required Fields");
     }
   }
-
-  // Future<void> __editComment() async {
-  //
-  // }
-  //
-  // Future<void> __deleteComment() async {
-  //
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -116,39 +114,51 @@ class _AddCommentPageState extends State<AddCommentPage> {
     ));
   }
 
-  // getItem(var subject) {
-  //   var row = Container(
-  //     margin: EdgeInsets.all(8.0),
-  //     child: Row(
-  //       children: <Widget>[
-  //         Container(
-  //           width: 100.0,
-  //           height: 150.0,
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.all(Radius.circular(8.0)),
-  //             color: Colors.redAccent,
-  //           ),
-  //           child: Image.asset(
-  //             subject['images']['large'],
-  //             height: 150.0,
-  //             width: 100.0,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  //   return Card(
-  //     color: Colors.blueGrey,
-  //     child: row,
-  //   );
-  // }
-
   List<Widget> createInputs(){
     return [
       SizedBox(height: 20.0,),
 
       new TextFormField(
-        decoration: new InputDecoration(labelText: 'Add your Comment'),
+        focusNode: focusNameNode,
+        controller: nameText,
+        onChanged: (value) {
+          _name = value;
+        },
+        decoration: new InputDecoration(
+            labelText: 'Your Name',
+          filled: true,
+          prefixIcon: Icon(
+            Icons.account_box,
+            size: 20.0,
+          ),
+          suffixIcon: IconButton(
+            onPressed: () => nameText.clear(),
+            icon: Icon(Icons.clear),
+          ),
+        ),
+      ),
+
+      SizedBox(height: 20.0,),
+
+      new TextFormField(
+        focusNode: focusCommentNode,
+        controller: commentText,
+        onChanged: (value) {
+          _comment = value;
+        },
+        decoration: new InputDecoration(
+            labelText: 'Comment',
+          filled: true,
+          prefixIcon: Icon(
+            Icons.comment,
+            size: 20.0,
+          ),
+          suffixIcon: IconButton(
+            onPressed: () => commentText.clear(),
+            icon: Icon(Icons.clear),
+          ),
+        ),
+
       )
     ];
   }
@@ -166,12 +176,14 @@ class _AddCommentPageState extends State<AddCommentPage> {
 
   List<Widget> createButtons(){
     return [
+      // ignore: deprecated_member_use
       new RaisedButton(
         child: new Text("Post", style: new TextStyle(fontSize: 20.0),),
         textColor: Colors.white,
         color: Colors.cyan,
 
         onPressed: validateAndSave,
+
       ),
     ];
   }
@@ -193,7 +205,7 @@ class _AddCommentPageState extends State<AddCommentPage> {
 
                 return ListView.builder(
                   itemBuilder: (context, index){
-                    return guestCommentUI(list[index]["comment"]);
+                    return guestCommentUI(list[index]["name"],list[index]["comment"]);
                   },
                   itemCount: list.length,
                 );
@@ -221,7 +233,7 @@ class _AddCommentPageState extends State<AddCommentPage> {
 
             new Text(
               image,
-              style: Theme.of(context).textTheme.subtitle,
+              style: Theme.of(context).textTheme.subtitle1,
               textAlign: TextAlign.center,
             ),
           ],
@@ -230,12 +242,10 @@ class _AddCommentPageState extends State<AddCommentPage> {
     );
   }
 
-  Widget guestCommentUI(String comment){
+  Widget guestCommentUI(String name,String comment){
     return new Card(
       elevation: 10.0,
       margin: EdgeInsets.all(15.0),
-
-
       child: new Container(
         padding:  new EdgeInsets.all(14.0),
 
@@ -243,11 +253,21 @@ class _AddCommentPageState extends State<AddCommentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: <Widget>[
-            SizedBox(height: 10.0,),
+
+            new Text(
+              name,
+              style: new TextStyle(
+                fontSize: 13.0,
+                fontWeight: FontWeight.bold
+              ),
+              textAlign: TextAlign.center,
+            ),
 
             new Text(
               comment,
-              style: Theme.of(context).textTheme.subtitle,
+              style: new TextStyle(
+                fontSize: 10.0,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

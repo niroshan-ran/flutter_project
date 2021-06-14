@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'guestpage.dart';
-import 'news_management_admin.dart';
 
 class GuestDrawer extends StatefulWidget {
   final nickName;

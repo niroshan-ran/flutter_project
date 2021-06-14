@@ -39,14 +39,14 @@ class _GuestPageState extends State<GuestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Guest Page")),
-        drawer: GuestDrawer(nickName: widget.nickName,email: widget.email,),
+        drawer: GuestDrawer(nickName: widget.nickName,email: widget.email),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text('All Guest News'),
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance.collection('guest_news').where("isPublished", isEqualTo: true).snapshots(),
+                  stream: FirebaseFirestore.instance.collection('News').where("isPublish", isEqualTo: true).snapshots(),
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> querySnapshot){
                     if(querySnapshot.hasError)
                       _showToast("Error has occur!");
@@ -59,7 +59,7 @@ class _GuestPageState extends State<GuestPage> {
 
                       return ListView.builder(
                         itemBuilder: (context, index){
-                          return guestNewsUI(list[index]["title"], list[index]["description"],list[index]["image"]);
+                          return guestNewsUI(list[index]["title"], list[index]["description"],list[index]["image"],list[index]["date"]);
                           // return ListTile(
                           //   title : Text(list[index]["title"]),
                           //   subtitle : Text(list[index]["image"])
@@ -75,11 +75,10 @@ class _GuestPageState extends State<GuestPage> {
         ));
   }
 
-  Widget guestNewsUI(String title, String description, String image){
+  Widget guestNewsUI(String title, String description, String image, String date){
     return new Card(
       elevation: 10.0,
       margin: EdgeInsets.all(15.0),
-
 
       child: new Container(
         padding:  new EdgeInsets.all(14.0),
@@ -93,7 +92,12 @@ class _GuestPageState extends State<GuestPage> {
               children: [
                 new Text(
                   title,
-                  style: Theme.of(context).textTheme.subtitle,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  textAlign: TextAlign.center,
+                ),
+                new Text(
+                  date,
+                  style: Theme.of(context).textTheme.subtitle2,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -107,7 +111,9 @@ class _GuestPageState extends State<GuestPage> {
 
             new Text(
               description,
-              style: Theme.of(context).textTheme.subtitle,
+              style: new TextStyle(
+                fontSize: 10.0,
+              ),
               textAlign: TextAlign.center,
             ),
 

@@ -1,12 +1,51 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/reporterPages/newsfeed.dart';
 import 'package:flutter_project/pages/reporterPages/reportnews.dart';
 import 'package:flutter_project/routes/routes.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 class AppDrawer extends StatelessWidget {
+
+
+
   @override
   Widget build(BuildContext context) {
+    void signOut() async {
+      await FirebaseAuth.instance.signOut();
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+
+    void logoutAlert(context){
+      Alert(
+        context: context,
+        type: AlertType.warning,
+        title: "Log out",
+        desc: "Are you sure you want to log out?",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Log out",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: signOut,
+            color: Color.fromRGBO(0, 179, 134, 1.0),
+          ),
+          DialogButton(
+            child: Text(
+              "Cancel",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            gradient: LinearGradient(colors: [
+              Color.fromRGBO(116, 116, 191, 1.0),
+              Color.fromRGBO(52, 138, 199, 1.0)
+            ]),
+          )
+        ],
+      ).show();
+    }
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -32,7 +71,10 @@ class AppDrawer extends StatelessWidget {
             onTap: () {},
           ),
           Divider(),
-          _createDrawerItem(icon: Icons.logout, text: 'Log Out'),
+          _createDrawerItem(
+              icon: Icons.logout,
+              text: 'Log Out',
+              onTap: () => logoutAlert(context)),
           Divider(),
           _createDrawerItem(icon: Icons.bug_report, text: 'Report an issue'),
 
@@ -80,6 +122,10 @@ class AppDrawer extends StatelessWidget {
       onTap: onTap,
     );
   }
+
+
+
 }
+
 
 //referred from : https://medium.com/flutter-community/flutter-vi-navigation-drawer-flutter-1-0-3a05e09b0db9

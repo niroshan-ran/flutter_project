@@ -3,7 +3,8 @@
    <application
         android:label="flutter_project"
         android:icon="@mipmap/ic_launcher">
-        <activity
+
+   <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

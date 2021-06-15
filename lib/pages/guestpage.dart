@@ -20,8 +20,7 @@ class GuestPage extends StatefulWidget {
 }
 
 class _GuestPageState extends State<GuestPage> {
-  bool viewVisible = false ;
-
+  
   void _showToast(message) {
     Fluttertoast.showToast(
         msg: message,
@@ -77,6 +76,7 @@ class _GuestPageState extends State<GuestPage> {
 
   Widget guestNewsUI(String title, String description, String image, String date){
     return new Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       elevation: 10.0,
       margin: EdgeInsets.all(15.0),
 
@@ -84,21 +84,21 @@ class _GuestPageState extends State<GuestPage> {
         padding:  new EdgeInsets.all(14.0),
 
         child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
 
           children: <Widget>[
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                new Text(
+                Expanded(child:new Text(
                   title,
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: new TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w600,
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                new Text(
-                  date,
-                  style: Theme.of(context).textTheme.subtitle2,
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -113,6 +113,7 @@ class _GuestPageState extends State<GuestPage> {
               description,
               style: new TextStyle(
                 fontSize: 10.0,
+                  fontStyle: FontStyle.italic
               ),
               textAlign: TextAlign.center,
             ),
@@ -124,6 +125,14 @@ class _GuestPageState extends State<GuestPage> {
               onPressed: (){
                 Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddCommentPage()));
               },
+            ),
+            new Text(
+              date,
+              style: new TextStyle(
+                fontSize: 15.0,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

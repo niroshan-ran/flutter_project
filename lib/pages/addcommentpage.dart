@@ -6,7 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 
 class AddCommentPage extends StatefulWidget {
-  const AddCommentPage({Key? key}) : super(key: key);
+  final nickName;
+  final email;
+  const AddCommentPage({Key? key, @required this.nickName,@required this.email}) : super(key: key);
 
   @override
   _AddCommentPageState createState() => _AddCommentPageState();
@@ -104,11 +106,12 @@ class _AddCommentPageState extends State<AddCommentPage> {
     return Scaffold(
       appBar: AppBar(title: Text("Comment Page")),
       body: new Container(
+
         margin: EdgeInsets.all(15.0),
         child: new Form(
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: createImage() + createInputs() + createButtons() + viewComment(),
+              children:  createImage() + createInputs() + createButtons() + viewComment(),
             )
         ),
     ));
@@ -253,7 +256,7 @@ class _AddCommentPageState extends State<AddCommentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: <Widget>[
-
+            //Text('${widget.nickName}'),
             new Text(
               name,
               style: new TextStyle(

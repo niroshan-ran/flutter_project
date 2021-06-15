@@ -45,7 +45,7 @@ class MainApp extends StatelessWidget {
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-  User? users = FirebaseAuth.instance.currentUser;
+  User? users;
 
   @override
   Widget build(BuildContext context) {
@@ -59,15 +59,16 @@ class MyApp extends StatelessWidget {
             if (users != null) {
               email = users!.email!;
 
-              if (users!.emailVerified) {
-                return HomePage(email: email);
-              }
+              return HomePage(email: email);
             } else {
               return LoginPage();
             }
           }
 
-          return LoginPage();
+          return Scaffold(
+              body: Center(
+            child: CircularProgressIndicator(),
+          ));
         });
   }
 }

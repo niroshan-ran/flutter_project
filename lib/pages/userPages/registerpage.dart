@@ -5,12 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_project/pages/userPages/verifypage.dart';
 import 'package:flutter_project/providers/user_provider.dart';
 import 'package:flutter_project/services/firestore_service.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 
+import 'homepage.dart';
 import 'loginpage.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -76,6 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
     node.unfocus();
     resetError(false);
     if (_formKey!.currentState!.validate()) {
+      toggleShowProgress();
       Future.wait([_createUser(userProvider, context)]).then((value) {
         try {
           for (bool val in value) {
@@ -84,8 +85,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 firestoreService.saveUser(userProvider.getCurrentUser())
               ]).whenComplete(() {
                 toggleShowProgress();
-                Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => VerifyPage()));
+                _showToast("Registration Success");
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => HomePage(email: userProvider.email)));
               });
             } else {
               continue;
@@ -99,7 +101,6 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       });
     }
-    toggleShowProgress();
   }
 
   Future<bool> _createUser(UserProvider user, BuildContext context) async {
@@ -359,11 +360,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ],
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {
-                                    toggleShowProgress();
-                                    preRegisterFunction(userProvider, context,
-                                        node, firestoreService);
-                                  },
+                                  onPressed: () => preRegisterFunction(
+                                      userProvider,
+                                      context,
+                                      node,
+                                      firestoreService),
                                   child: Text("Register"),
                                 ),
                                 ElevatedButton(

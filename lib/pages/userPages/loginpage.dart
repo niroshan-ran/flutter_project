@@ -1,11 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/main.dart';
 import 'package:flutter_project/pages/userPages/registerpage.dart';
-import 'package:flutter_project/pages/userPages/verifypage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import 'homepage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -68,17 +66,11 @@ class _LoginPageState extends State<LoginPage> {
         timeInSecForIosWeb: 1);
   }
 
-  Future<int> _login(BuildContext context) async {
+  Future<void> _login(BuildContext context) async {
     if (_email != "" && _password != "") {
       try {
-        UserCredential credential = await FirebaseAuth.instance
+        await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
-
-        if (credential.user!.emailVerified) {
-          return 1;
-        } else {
-          return -1;
-        }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           clearAllText();
@@ -105,7 +97,6 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     resetError(true);
-    return 0;
   }
 
   bool _obscureText = true;
@@ -135,20 +126,11 @@ class _LoginPageState extends State<LoginPage> {
     node.unfocus();
     resetError(false);
     if (_formKey!.currentState!.validate()) {
-      Future.wait([_login(context)]).then((value) {
-        for (int i in value) {
-          if (i == -1) {
-            toggleShowProgress();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => VerifyPage()));
-          } else if (i == 1) {
-            toggleShowProgress();
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => HomePage(
-                      email: _email,
-                    )));
-          }
-        }
+      toggleShowProgress();
+      Future.wait([_login(context)]).whenComplete(() {
+        toggleShowProgress();
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context) => MyApp()));
       });
     }
   }
@@ -161,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey!.currentState!.validate()) {
       emailTextValid = true;
       try {
+        toggleShowProgress();
         FirebaseAuth.instance
             .sendPasswordResetEmail(email: _email)
             .whenComplete(() {
@@ -283,17 +266,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        toggleShowProgress();
-                        preLoginFunction(context, node);
-                      },
+                      onPressed: () => preLoginFunction(context, node),
                       child: Text("Login"),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        toggleShowProgress();
-                        sendPasswordResetEmail(context, node);
-                      },
+                      onPressed: () => sendPasswordResetEmail(context, node),
                       child: Text("Forgot Password?"),
                     ),
                     ElevatedButton(

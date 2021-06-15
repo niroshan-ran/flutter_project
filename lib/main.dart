@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/admin_drawer.dart';
 import 'package:flutter_project/pages/guest_drawer.dart';
 import 'package:flutter_project/pages/guestpage.dart';
-import 'package:flutter_project/pages/homepage.dart';
-import 'package:flutter_project/pages/loginpage.dart';
 import 'package:flutter_project/pages/moderatorpage.dart';
 import 'package:flutter_project/pages/news_management_admin.dart';
-import 'package:flutter_project/pages/verifypage.dart';
+import 'package:flutter_project/pages/userPages/homepage.dart';
+import 'package:flutter_project/pages/userPages/loginpage.dart';
+import 'package:flutter_project/pages/userPages/verifypage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

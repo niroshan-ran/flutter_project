@@ -2,8 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/dialoges/loading_dialog.dart';
-import 'package:flutter_project/pages/registerpage.dart';
-import 'package:flutter_project/pages/verifypage.dart';
+import 'package:flutter_project/pages/userPages/registerpage.dart';
+import 'package:flutter_project/pages/userPages/verifypage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'homepage.dart';
@@ -71,33 +71,41 @@ class _LoginPageState extends State<LoginPage> {
         timeInSecForIosWeb: 1);
   }
 
-  Future<int> _login() async {
+  Future<int> _login(BuildContext context) async {
     if (_email != "" && _password != "") {
+      LoadingDialog.showLoadingDialog(context, _loaderDialog!);
       try {
         UserCredential credential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(email: _email, password: _password);
 
         if (credential.user!.emailVerified) {
+          LoadingDialog.hideDialog(context);
           return 1;
         } else {
+          LoadingDialog.hideDialog(context);
           return -1;
         }
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           clearAllText();
+          LoadingDialog.hideDialog(context);
           _showToast("The Account is not Existing");
         } else if (e.code == 'wrong-password') {
           clearPassword();
+          LoadingDialog.hideDialog(context);
           _showToast("Incorrect Password");
         } else if (e.code == 'invalid-email') {
           clearAllText();
+          LoadingDialog.hideDialog(context);
           _showToast("Invalid Email");
         } else {
           clearAllText();
+          LoadingDialog.hideDialog(context);
           _showErrorToast("Unknown Error Occurred", e);
         }
       } catch (e) {
         clearAllText();
+        LoadingDialog.hideDialog(context);
         _showErrorToast("Unknown Error Occurred", e);
       }
     }
@@ -107,6 +115,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bool _obscureText = true;
+  bool emailTextValid = true;
+  bool passwordTextValid = true;
 
   @override
   void dispose() {
@@ -121,9 +131,6 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  bool emailTextValid = true;
-  bool passwordTextValid = true;
-
   void resetError(bool value) {
     emailTextValid = value;
     passwordTextValid = value;
@@ -133,10 +140,8 @@ class _LoginPageState extends State<LoginPage> {
     node.unfocus();
     resetError(false);
     if (_formKey!.currentState!.validate()) {
-      LoadingDialog.showLoadingDialog(context, _loaderDialog!);
-      Future.wait([_login()]).then((value) {
+      Future.wait([_login(context)]).then((value) {
         for (int i in value) {
-          LoadingDialog.hideDialog(context);
           if (i == -1) {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => VerifyPage()));
@@ -149,6 +154,51 @@ class _LoginPageState extends State<LoginPage> {
         }
       });
     }
+  }
+
+  Future<void> sendPasswordResetEmail(
+      BuildContext context, FocusScopeNode node) async {
+    node.unfocus();
+    emailTextValid = false;
+    passwordTextValid = true;
+    LoadingDialog.showLoadingDialog(context, _loaderDialog!);
+    if (_formKey!.currentState!.validate()) {
+      emailTextValid = true;
+      try {
+        FirebaseAuth.instance
+            .sendPasswordResetEmail(email: _email)
+            .whenComplete(() {
+          LoadingDialog.hideDialog(context);
+          clearAllText();
+          _showToast("Password Reset Email Sent");
+        });
+        return;
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          LoadingDialog.hideDialog(context);
+          clearAllText();
+          _showToast("The Account is not Existing");
+          return;
+        } else if (e.code == 'invalid-email') {
+          LoadingDialog.hideDialog(context);
+          clearAllText();
+          _showToast("Invalid Email");
+          return;
+        } else {
+          LoadingDialog.hideDialog(context);
+          clearAllText();
+          _showErrorToast("Unknown Error Occurred", e);
+          return;
+        }
+      } catch (e) {
+        LoadingDialog.hideDialog(context);
+        clearAllText();
+        _showErrorToast("Unknown Error Occurred", e);
+        return;
+      }
+    }
+    LoadingDialog.hideDialog(context);
+    return;
   }
 
   @override
@@ -223,8 +273,7 @@ class _LoginPageState extends State<LoginPage> {
                     obscureText: _obscureText,
                     enableSuggestions: false,
                     autocorrect: false,
-                    textInputAction: TextInputAction.done,
-                    onEditingComplete: () => preLoginFunction(context, node),
+                    textInputAction: TextInputAction.go,
                     onChanged: (value) {
                       _password = value;
                       passwordTextValid = true;
@@ -234,6 +283,10 @@ class _LoginPageState extends State<LoginPage> {
                 ElevatedButton(
                   onPressed: () => preLoginFunction(context, node),
                   child: Text("Login"),
+                ),
+                ElevatedButton(
+                  onPressed: () => sendPasswordResetEmail(context, node),
+                  child: Text("Forgot Password?"),
                 ),
                 ElevatedButton(
                   onPressed: () {

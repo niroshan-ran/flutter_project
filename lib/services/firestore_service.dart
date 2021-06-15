@@ -8,14 +8,12 @@ class FirestoreService {
     return _db.collection('users').doc(user.email).set(user.toMap());
   }
 
-  Stream<List<ApplicationUser>> getUsers(String email) {
+  Stream<ApplicationUser> getUsers(String email) {
     return _db
         .collection('users')
-        .where('email', isEqualTo: email)
+        .doc(email)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((document) => ApplicationUser.fromFirestore(document.data()))
-            .toList());
+        .map((snapshot) => ApplicationUser.fromFirestore(snapshot.data()!));
   }
 
   Future<void> updateUser(ApplicationUser user) {

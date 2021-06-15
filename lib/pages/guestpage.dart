@@ -20,7 +20,7 @@ class GuestPage extends StatefulWidget {
 }
 
 class _GuestPageState extends State<GuestPage> {
-  
+
   void _showToast(message) {
     Fluttertoast.showToast(
         msg: message,
@@ -65,6 +65,7 @@ class _GuestPageState extends State<GuestPage> {
                           // );
                         },
                         itemCount: list.length,
+
                       );
                     }
                   },
@@ -75,6 +76,7 @@ class _GuestPageState extends State<GuestPage> {
   }
 
   Widget guestNewsUI(String title, String description, String image, String date){
+    
     return new Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       elevation: 10.0,
@@ -123,7 +125,7 @@ class _GuestPageState extends State<GuestPage> {
             new IconButton(
               icon: Icon(Icons.comment,color: Colors.cyan,),
               onPressed: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>AddCommentPage()));
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> AddCommentPage()));
               },
             ),
             new Text(

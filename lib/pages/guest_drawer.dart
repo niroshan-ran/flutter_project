@@ -25,7 +25,7 @@ class _GuestDrawerState extends State<GuestDrawer> {
       child: ListView(
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text('${widget.email}'),
+            accountName: Text('${widget.nickName}'),
             accountEmail: Text('${widget.email}'),
             currentAccountPicture: Container(
               height: 60,

@@ -17,6 +17,7 @@ class _MyNewsPageState extends State<MyNewsPage> {
 
   final CollectionReference newsRef = FirebaseFirestore.instance.collection('News');
 
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -72,6 +73,7 @@ class _MyNewsPageState extends State<MyNewsPage> {
                                       doc['description'],
                                       style: Theme.of(context).textTheme.subtitle2,
                                       textAlign: TextAlign.center),
+
                                 ],
 
                               ),

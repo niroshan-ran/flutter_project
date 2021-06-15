@@ -20,6 +20,27 @@ Widget NewsArray(BuildContext context){
 
   final CollectionReference newsRef = FirebaseFirestore.instance.collection('News');
 
+  deleteUser({required AsyncSnapshot<QuerySnapshot<Object?>> snapshot, required int index}){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text('Delete User'),
+            content: Text('Are you sure you want to delete ?'),
+            actions: [
+              ElevatedButton(onPressed: (){Navigator.pop(context);}, child: Text('Cancel')),
+              ElevatedButton(
+                  onPressed: (){
+                    snapshot.data!.docs[index].reference.delete().whenComplete(() => Navigator.pop(context));
+                  },
+                  child: Text('Delete')
+              )
+            ],
+          );
+        }
+    );
+  }
+
   return Container(
     color: Colors.black12,
     child: Padding(
@@ -69,6 +90,18 @@ Widget NewsArray(BuildContext context){
                                   doc['description'],
                                   style: Theme.of(context).textTheme.subtitle2,
                                   textAlign: TextAlign.center),
+                              Container(
+                                child: Row(
+                                  children: [
+                                    Spacer(),
+                                    IconButton(
+                                      icon: Icon(Icons.delete,color: Colors.black,),
+                                      onPressed: (){deleteUser(snapshot: snapshot,index: index);},
+                                    )
+                                  ],
+                                ),
+                              )
+
                             ],
 
                           ),

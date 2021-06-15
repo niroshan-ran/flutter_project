@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/models/users.dart';
 import 'package:flutter_project/pages/loginpage.dart';
@@ -8,7 +7,6 @@ import 'package:flutter_project/services/firestore_service.dart';
 import 'guestpage.dart';
 import 'loginpage.dart';
 import 'moderatorpage.dart';
-import 'news_management_admin.dart';
 
 class HomePage extends StatefulWidget {
   final String email;
@@ -31,7 +29,8 @@ class _HomePageState extends State<HomePage> {
             for (ApplicationUser obj in snapshot.requireData) {
               switch (obj.position) {
                 case 'moderator':
-                  return ModeratorPage(nickName: obj.nickName, email : obj.email);
+                  return ModeratorPage(
+                      nickName: obj.nickName, email: obj.email);
                 case 'reporter':
                   return ReporterPage(nickName: obj.nickName);
                 default:

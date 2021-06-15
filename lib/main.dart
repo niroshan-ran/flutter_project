@@ -3,13 +3,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/pages/admin_drawer.dart';
 import 'package:flutter_project/pages/guest_drawer.dart';
+import 'package:flutter_project/pages/guestpage.dart';
 import 'package:flutter_project/pages/homepage.dart';
 import 'package:flutter_project/pages/loginpage.dart';
 import 'package:flutter_project/pages/moderatorpage.dart';
 import 'package:flutter_project/pages/news_management_admin.dart';
 import 'package:flutter_project/pages/verifypage.dart';
-import 'package:flutter_project/pages/guestpage.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,13 +22,12 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      routes:  {
-        Routes.user: (context) => ModeratorPage(),
-        Routes.news: (context) => NewsManagementAdminPage(),
-        Routers.guest: (context) => GuestPage(),
-        // Routes.newsfeed: (context) => NotesPage(),
-      },
+        routes: {
+          Routes.user: (context) => ModeratorPage(),
+          Routes.news: (context) => NewsManagementAdminPage(),
+          Routers.guest: (context) => GuestPage(),
+          // Routes.newsfeed: (context) => NotesPage(),
+        },
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -41,7 +39,6 @@ class MainApp extends StatelessWidget {
             selectionHandleColor: Color(0xFF2196F3).withOpacity(1),
           ),
         ),
-
         home: MyApp());
   }
 }

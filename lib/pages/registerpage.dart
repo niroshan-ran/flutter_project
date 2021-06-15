@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_project/pages/loading_class.dart';
+import 'package:flutter_project/dialoges/loading_dialog.dart';
 import 'package:flutter_project/pages/verifypage.dart';
 import 'package:flutter_project/providers/user_provider.dart';
 import 'package:flutter_project/services/firestore_service.dart';
@@ -36,7 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final nickNameText = TextEditingController();
   final confirmPasswordText = TextEditingController();
 
-  void focusText(textNode) {
+  void focusText(textNode, context) {
     FocusScope.of(context).requestFocus(textNode);
   }
 
@@ -46,9 +46,10 @@ class _RegisterPageState extends State<RegisterPage> {
     nickNameText.clear();
     confirmPasswordText.clear();
     _confirmPassword = "";
+    _character = Positions.guest;
   }
 
-  void clearText(textFieldController, variableString) {
+  void clearText(textFieldController) {
     textFieldController.clear();
     _character = Positions.guest;
   }
@@ -69,13 +70,25 @@ class _RegisterPageState extends State<RegisterPage> {
         timeInSecForIosWeb: 1);
   }
 
-  Future<bool> _createUser(UserProvider user) async {
-    print('OutPut Values :: ${user.email}');
+  Future<bool> _createUser(UserProvider user, BuildContext context) async {
+    switch (_character) {
+      case Positions.guest:
+        user.changePosition("guest");
+        break;
+      case Positions.reporter:
+        user.changePosition("reporter");
+        break;
+      case Positions.moderator:
+        user.changePosition("moderator");
+        break;
+      default:
+        user.changePosition("guest");
+        break;
+    }
 
     if (_password != "" &&
         _confirmPassword != "" &&
         user.email != "" &&
-        user.position != "" &&
         user.nickName != "") {
       if (_password == _confirmPassword) {
         try {
@@ -86,19 +99,34 @@ class _RegisterPageState extends State<RegisterPage> {
           return userCredential.user != null;
         } on FirebaseAuthException catch (e) {
           if (e.code == 'weak-password') {
-            _showToast('The password provided is too weak.');
+            LoadingDialog.hideDialog(context);
+            clearAllText();
+            _showToast('Your Password has to be more than 8 Characters.');
           } else if (e.code == 'email-already-in-use') {
-            _showToast('The account already exists for that email.');
+            LoadingDialog.hideDialog(context);
+            clearAllText();
+            focusText(focusEmailNode, context);
+            _showToast('An account already exists for that email.');
+          } else if (e.code == 'invalid-email') {
+            LoadingDialog.hideDialog(context);
+            clearAllText();
+            focusText(focusEmailNode, context);
+            _showToast('Please Type a valid Email.');
           }
         } catch (e) {
+          clearAllText();
+          LoadingDialog.hideDialog(context);
           _showErrorToast("Unknown Error Occurred", e);
         }
       } else {
-        clearText(confirmPasswordText, 'confirmPassword');
-        focusText(focusConfirmPasswordNode);
+        LoadingDialog.hideDialog(context);
+        clearText(passwordText);
+        clearText(confirmPasswordText);
+        focusText(focusConfirmPasswordNode, context);
         _showToast("Confirmed Password is Not Match");
       }
     } else {
+      LoadingDialog.hideDialog(context);
       _showToast("Please Fill all the Required Fields");
     }
 
@@ -118,11 +146,10 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  Positions? _character = Positions.guest;
+  late Positions? _character;
 
   @override
   void initState() {
-    //New Record
     clearAllText();
     super.initState();
   }
@@ -219,7 +246,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   onChanged: (Positions? value) {
                                     setState(() {
                                       _character = value;
-                                      userProvider.changePosition('guest');
                                     });
                                   }),
                               RadioListTile<Positions>(
@@ -229,7 +255,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   onChanged: (Positions? value) {
                                     setState(() {
                                       _character = value;
-                                      userProvider.changePosition('reporter');
                                     });
                                   }),
                               RadioListTile<Positions>(
@@ -239,17 +264,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                   onChanged: (Positions? value) {
                                     setState(() {
                                       _character = value;
-                                      userProvider.changePosition('moderator');
                                     });
                                   }),
                             ],
                           ),
-                          MaterialButton(
-                            color: Colors.blue,
+                          ElevatedButton(
                             onPressed: () {
                               LoadingDialog.showLoadingDialog(
                                   context, _loaderDialog);
-                              Future.wait([_createUser(userProvider)])
+                              node.unfocus();
+                              Future.wait([_createUser(userProvider, context)])
                                   .then((value) {
                                 for (bool val in value) {
                                   if (val) {
@@ -271,9 +295,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             },
                             child: Text("Register"),
                           ),
-                          MaterialButton(
-                            color: Colors.grey,
+                          ElevatedButton(
                             onPressed: () {
+                              node.unfocus();
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => LoginPage()));

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/models/users.dart';
 
 class UserProvider with ChangeNotifier {
-  late String _email;
-  late String _nickName;
-  late String _position;
+  String _email = "";
+  String _nickName = "";
+  String _position = "";
 
   //Getters
   String get email => _email;

@@ -6,6 +6,7 @@ import 'package:flutter_project/pages/homepage.dart';
 import 'package:flutter_project/pages/loginpage.dart';
 import 'package:flutter_project/pages/moderatorpage.dart';
 import 'package:flutter_project/pages/news_management_admin.dart';
+import 'package:flutter_project/pages/verifypage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,8 +21,15 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          accentColor: Color(0xFF2196F3).withOpacity(.6),
+          primaryColor: Color(0xFF2196F3),
+          textSelectionTheme: TextSelectionThemeData(
+            selectionColor: Color(0xFF2196F3).withOpacity(.5),
+            cursorColor: Color(0xFF2196F3).withOpacity(.6),
+            selectionHandleColor: Color(0xFF2196F3).withOpacity(1),
+          ),
         ),
         routes: {
           Routes.user: (context) => ModeratorPage(),
@@ -48,7 +56,12 @@ class MyApp extends StatelessWidget {
 
             if (users != null) {
               email = users!.email!;
-              return HomePage(email: email);
+
+              if (users!.emailVerified) {
+                return HomePage(email: email);
+              } else {
+                return VerifyPage();
+              }
             } else {
               return LoginPage();
             }

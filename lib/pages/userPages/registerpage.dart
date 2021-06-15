@@ -224,15 +224,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                       }
                                       if (!EmailValidator.validate(value) &&
                                           !emailTextValid) {
-                                        return 'Please enter a valid e-mail';
+                                        return 'Please enter a valid email';
                                       }
 
                                       return null;
                                     },
                                     decoration: InputDecoration(
                                       helperText:
-                                          'Please Type a Valid Working Email for Verification Purpose',
-                                      labelText: 'E-mail',
+                                          'Type your Working Email in case for Password Reset',
+                                      labelText: 'Email',
                                       labelStyle: TextStyle(
                                         color: Color(0xFF2196F3),
                                       ),
@@ -296,7 +296,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                                 Icons.remove_red_eye_outlined),
                                       ),
                                       helperText:
-                                          "Your Password has to be at-least 8 Characters",
+                                          "Your Password has to be at-least 6 Characters",
                                       labelText: 'Password',
                                       labelStyle: TextStyle(
                                         color: Color(0xFF2196F3),

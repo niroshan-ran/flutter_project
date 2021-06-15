@@ -209,13 +209,13 @@ class _LoginPageState extends State<LoginPage> {
                           }
                           if (!EmailValidator.validate(value) &&
                               !emailTextValid) {
-                            return 'Please enter a valid e-mail';
+                            return 'Please enter a valid email';
                           }
 
                           return null;
                         },
                         decoration: InputDecoration(
-                          labelText: 'E-mail',
+                          labelText: 'Email',
                           labelStyle: TextStyle(
                             color: Color(0xFF2196F3),
                           ),

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/models/users.dart';
 import 'package:flutter_project/pages/reporterpage.dart';
-import 'package:flutter_project/pages/userPages/loginpage.dart';
 import 'package:flutter_project/services/firestore_service.dart';
 
 import '../guestpage.dart';
 import '../moderatorpage.dart';
-import 'loginpage.dart';
 
 class HomePage extends StatefulWidget {
   final String email;
@@ -38,7 +36,11 @@ class _HomePageState extends State<HomePage> {
             }
           }
 
-          return LoginPage();
+          return Scaffold(
+              body: Center(
+            child: CircularProgressIndicator(),
+          ));
+          ;
         });
   }
 }

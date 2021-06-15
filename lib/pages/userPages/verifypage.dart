@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/dialoges/loading_dialog.dart';
+import 'package:flutter_project/pages/userPages/loginpage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'homepage.dart';
@@ -22,11 +22,12 @@ class _VerifyPageState extends State<VerifyPage> {
   late GlobalKey? _loaderDialog;
 
   void sendEmail() {
+    toggleShowProgress();
     user = auth.currentUser!;
-
-    user.sendEmailVerification();
-
-    _showToast("Verification Email Sent");
+    user.sendEmailVerification().whenComplete(() {
+      _showToast("Verification Email Sent");
+    });
+    toggleShowProgress();
   }
 
   @override
@@ -49,53 +50,83 @@ class _VerifyPageState extends State<VerifyPage> {
     super.dispose();
   }
 
-  void checkEmail(BuildContext context) {
-    LoadingDialog.showLoadingDialog(context, _loaderDialog!);
+  Future<void> signOut(BuildContext context) async {
+    timer.cancel();
+    toggleShowProgress();
+    await FirebaseAuth.instance.signOut();
+    toggleShowProgress();
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+  }
 
+  void checkEmail(BuildContext context) {
+    toggleShowProgress();
     if (user.emailVerified) {
-      LoadingDialog.hideDialog(context);
+      toggleShowProgress();
       timer.cancel();
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => HomePage(email: user.email!)));
     } else {
-      LoadingDialog.hideDialog(context);
+      toggleShowProgress();
       _showToast("Email is not yet Verified");
     }
+  }
+
+  bool showProgress = false;
+
+  void toggleShowProgress() {
+    setState(() {
+      showProgress = !showProgress;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Verify Email")),
-        body: Center(
-          child: Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const ListTile(
-                  leading: Icon(Icons.email),
-                  title: Text('Verification Email Sent'),
-                  subtitle: Text('Please verify your Email Address'),
+        body: showProgress
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Center(
+                child: Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const ListTile(
+                        leading: Icon(Icons.email),
+                        title: Text('Verification Email Sent'),
+                        subtitle: Text('Please verify your Email Address'),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          TextButton(
+                            child: const Text('Resend Email'),
+                            onPressed: sendEmail,
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            child: const Text('Retry Login'),
+                            onPressed: () {
+                              toggleShowProgress();
+                              checkEmail(context);
+                              toggleShowProgress();
+                              _showToast("Verification Email Sent");
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            child: const Text('Exit'),
+                            onPressed: () => signOut(context),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    TextButton(
-                      child: const Text('Resend Email'),
-                      onPressed: sendEmail,
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      child: const Text('Retry Login'),
-                      onPressed: () => checkEmail(context),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ));
+              ));
   }
 
   void _showToast(message) {

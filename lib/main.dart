@@ -8,7 +8,6 @@ import 'package:flutter_project/pages/moderatorpage.dart';
 import 'package:flutter_project/pages/news_management_admin.dart';
 import 'package:flutter_project/pages/userPages/homepage.dart';
 import 'package:flutter_project/pages/userPages/loginpage.dart';
-import 'package:flutter_project/pages/userPages/verifypage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,8 +61,6 @@ class MyApp extends StatelessWidget {
 
               if (users!.emailVerified) {
                 return HomePage(email: email);
-              } else {
-                return VerifyPage();
               }
             } else {
               return LoginPage();
